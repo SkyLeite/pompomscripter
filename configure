@@ -949,12 +949,12 @@ MacOSX)
 cat >> $MAKEFILE <<_EOF
 
 LIBS = $OURLIBS \\
-       \$(shell \$(SHELLENV) $SDL_CONFIG --static-libs) \\
+       \$(shell \$(SHELLENV) $SDL_CONFIG --libs) \\
        \$(shell \$(SHELLENV) $SMPEG_CONFIG --libs)      \\
        \$(shell \$(SHELLENV) $FREETYPE_CONFIG --libs)   \\
        $LINKSDL2_image $LINKjpeg $LINKpng              \\
        $LINKSDL2_mixer $LINKogg $LINKvorbis $LINKvorbisfile \\
-       $LINKbz2 -lm -framework CoreFoundation
+       $LINKbz2 -lm -framework CoreFoundation -framework CoreServices -framework ApplicationServices
 
 export MACOSX_DEPLOYMENT_TARGET=10.7
 # On 10.7 and 10.8 libc++ is available but not default
