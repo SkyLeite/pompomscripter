@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 cmake_minimum_required(VERSION 3.8)
 project(ponscripter)
 
@@ -27,3 +28,101 @@ find_package(SMPEG2 2.0.0 REQUIRED)
 find_package(ZLIB 1.2.3 REQUIRED)
 
 add_subdirectory(src)
+=======
+cmake_minimum_required(VERSION 3.31.6)
+
+project(POMPOM)
+
+add_executable(POMPOM)
+
+set_target_properties(POMPOM PROPERTIES OUTPUT_NAME pompom)
+
+# Find sources
+set(POMPOM_SOURCES
+    src/AnimationInfo.cpp
+    src/DirPaths.cpp
+    src/DirectReader.cpp
+    src/DirtyRect.cpp
+    src/Fontinfo.cpp
+    src/NsaReader.cpp
+    src/Ponscripter.cpp
+    src/PonscripterLabel.cpp
+    src/PonscripterLabel_animation.cpp
+    src/PonscripterLabel_command.cpp
+    src/PonscripterLabel_effect.cpp
+    src/PonscripterLabel_effect_breakup.cpp
+    src/PonscripterLabel_effect_cascade.cpp
+    src/PonscripterLabel_effect_trig.cpp
+    src/PonscripterLabel_event.cpp
+    src/PonscripterLabel_ext.cpp
+    src/PonscripterLabel_file.cpp
+    src/PonscripterLabel_file2.cpp
+    src/PonscripterLabel_image.cpp
+    src/PonscripterLabel_rmenu.cpp
+    src/PonscripterLabel_sound.cpp
+    src/PonscripterLabel_text.cpp
+    src/PonscripterMessage.cpp
+    src/SarReader.cpp
+    src/ScriptHandler.cpp
+    src/ScriptParser.cpp
+    src/ScriptParser_command.cpp
+    src/bstrwrap.cpp
+    src/cp932_encoding.cpp
+    src/encoding.cpp
+    src/expression.cpp
+    src/font.cpp
+    src/graphics_altivec.cpp
+    src/graphics_mmx.cpp
+    src/graphics_sse2.cpp
+    src/prng.cpp
+    src/pstring.cpp
+    src/resize_image.cpp
+    src/resources.cpp
+    src/bstrlib.c
+)
+
+if(ENABLE_AVIFILE)
+    list(APPEND POMPOM_SOURCES src/AVIWrapper.cpp)
+endif()
+
+if(ENABLE_MP3_MAD)
+    list(APPEND POMPOM_SOURCES src/MadWrapper.cpp)
+else()
+    find_library(SMPEG_LIBRARY NAMES smpeg2 PATHS /opt/homebrew/lib /usr/local/lib)
+    target_link_libraries(POMPOM PRIVATE ${SMPEG_LIBRARY})
+    target_include_directories(POMPOM PRIVATE src/extlib/src/smpeg-2.0.0)
+endif()
+
+if(WINDOWS)
+    list(APPEND POMPOM_SOURCES src/SDL_win32_main.c)
+endif()
+
+target_sources(POMPOM PRIVATE ${POMPOM_SOURCES})
+
+# Find dependencies
+find_package(SDL2 CONFIG REQUIRED)
+target_link_libraries(POMPOM PRIVATE SDL2::SDL2)
+
+find_package(SDL2_image CONFIG REQUIRED)
+target_link_libraries(POMPOM PRIVATE SDL2_image::SDL2_image)
+
+find_package(SDL2_mixer CONFIG REQUIRED)
+target_link_libraries(POMPOM PRIVATE SDL2_mixer::SDL2_mixer)
+
+find_package(Freetype REQUIRED)
+target_link_libraries(POMPOM PRIVATE Freetype::Freetype)
+
+find_package(BZip2 REQUIRED)
+target_link_libraries(POMPOM PRIVATE BZip2::BZip2)
+
+# MacOS-specific
+if(APPLE)
+    target_compile_definitions(POMPOM PRIVATE MACOSX=1)
+
+    target_link_libraries(POMPOM PRIVATE
+        "-framework CoreFoundation"
+        "-framework ApplicationServices"
+        "-framework CoreServices"
+    )
+endif()
+>>>>>>> 7a9b563 (Build with CMake)
