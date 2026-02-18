@@ -33,10 +33,10 @@
 #include <SDL_image.h>
 #include <SDL_mixer.h>
 
-#ifdef MP3_MAD
-#include "MadWrapper.h"
+#ifdef ENABLE_MP3_MAD
+    #include "MadWrapper.h"
 #else
-#include <smpeg.h>
+    #include <smpeg.h>
 #endif
 
 #define DEFAULT_VIDEO_SURFACE_FLAG (SDL_SWSURFACE)

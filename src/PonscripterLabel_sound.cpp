@@ -33,6 +33,12 @@
 #include "AVIWrapper.h"
 #endif
 
+#ifdef ENABLE_MP3_MAD
+#include "MadWrapper.h"
+#else
+#include <smpeg.h>
+#endif
+
 struct WAVE_HEADER {
     char chunk_riff[4];
     char riff_length[4];
