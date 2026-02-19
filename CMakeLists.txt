@@ -116,6 +116,28 @@ target_link_libraries(POMPOM PRIVATE Freetype::Freetype)
 find_package(BZip2 REQUIRED)
 target_link_libraries(POMPOM PRIVATE BZip2::BZip2)
 
+include(FetchContent)
+FetchContent_Declare(imgui_external
+    URL https://github.com/SkyLeite/imgui/archive/bc51d937f348cb884dfb702b7e5f7522cdda51f2.zip
+	EXCLUDE_FROM_ALL
+)
+FetchContent_MakeAvailable(imgui_external)
+
+add_library(imgui
+	${imgui_external_SOURCE_DIR}/imgui.cpp
+	${imgui_external_SOURCE_DIR}/imgui_demo.cpp
+	${imgui_external_SOURCE_DIR}/imgui_draw.cpp
+	${imgui_external_SOURCE_DIR}/imgui_tables.cpp
+	${imgui_external_SOURCE_DIR}/imgui_widgets.cpp
+	${imgui_external_SOURCE_DIR}/backends/imgui_impl_sdl2.cpp
+	${imgui_external_SOURCE_DIR}/backends/imgui_impl_sdlrenderer2.cpp
+)
+target_link_libraries(imgui PUBLIC SDL2::SDL2)
+target_include_directories(imgui PUBLIC ${imgui_external_SOURCE_DIR})
+
+target_link_libraries(POMPOM PUBLIC imgui)
+
+
 # MacOS-specific
 if(APPLE)
     target_compile_definitions(POMPOM PRIVATE MACOSX=1)

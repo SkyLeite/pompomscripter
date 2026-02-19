@@ -29,6 +29,10 @@
 #include <ctype.h>
 #include <sys/stat.h>
 
+#include "imgui.h"
+#include "backends/imgui_impl_sdl2.h"
+#include "backends/imgui_impl_sdlrenderer2.h"
+
 #if defined(USE_PPC_GFX)
 # if defined(__linux__) || (defined(__FreeBSD__) && __FreeBSD__ >= 12)
 #  ifdef __linux__
@@ -454,7 +458,6 @@ void PonscripterLabel::initSDL()
         }
     }
 
-    
     minH = minH * 0.9;
     int dispW = screen_width;
     int dispH = screen_height;
@@ -463,11 +466,17 @@ void PonscripterLabel::initSDL()
         dispH = minH;
     }
 
+
+    float main_scale = ImGui_ImplSDL2_GetContentScaleForDisplay(0);
+
+    dispW = dispW * main_scale;
+    dispH = dispH * main_scale;
+
     screen = SDL_CreateWindow(wm_title_string,
-        SDL_WINDOWPOS_UNDEFINED,
-        SDL_WINDOWPOS_UNDEFINED,
-        dispW, dispH,
-        (fullscreen_mode ? fullscreen_flags : 0) | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
+                              SDL_WINDOWPOS_UNDEFINED,
+                              SDL_WINDOWPOS_UNDEFINED,
+                              dispW, dispH,
+                              (fullscreen_mode ? fullscreen_flags : 0) | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
 
     /* end chronotrig */
 
@@ -477,9 +486,7 @@ void PonscripterLabel::initSDL()
       exit(-1);
     }
 
-
     SDL_RenderSetLogicalSize(renderer, screen_width, screen_height);
-
 
     screen_tex = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888,
         SDL_TEXTUREACCESS_STREAMING, screen_width, screen_height);
@@ -570,6 +577,25 @@ void PonscripterLabel::initSDL()
 
 
     SDL_RenderClear(renderer);
+
+    // Imgui
+    fprintf(stderr, "Creating imgui context\n");
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO &io = ImGui::GetIO();
+    (void)io;
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard; // Enable Keyboard Controls
+    io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;  // Enable Gamepad Controls
+    ImGui::StyleColorsDark();
+
+    ImGuiStyle &style = ImGui::GetStyle();
+    style.ScaleAllSizes(main_scale); // Bake a fixed style scale. (until we have a solution for dynamic style scaling, changing this requires resetting Style + calling this again)
+    style.FontScaleDpi = main_scale; // Set initial font scale. (in docking branch: using io.ConfigDpiScaleFonts=true automatically overrides this for every window depending on the current monitor)
+
+    // Setup Platform/Renderer backends
+    ImGui_ImplSDL2_InitForSDLRenderer(screen, renderer);
+    ImGui_ImplSDLRenderer2_Init(renderer);
+
     SDL_RenderPresent(renderer);
 
     openAudio();
@@ -1445,6 +1471,7 @@ void PonscripterLabel::resetSentenceFont()
 void PonscripterLabel::rerender() {
   SDL_RenderClear(renderer);
   SDL_RenderCopy(renderer, screen_tex, NULL, NULL);
+  ImGui_ImplSDLRenderer2_RenderDrawData(ImGui::GetDrawData(), renderer);
   SDL_RenderPresent(renderer);
 }
 

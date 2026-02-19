@@ -31,6 +31,10 @@
 
 #include "PonscripterUserEvents.h"
 
+#include "imgui.h"
+#include "backends/imgui_impl_sdl2.h"
+#include "backends/imgui_impl_sdlrenderer2.h"
+
 #define EDIT_MODE_PREFIX "[EDIT MODE]  "
 #define EDIT_SELECT_STRING "MP3 vol (m)  SE vol (s)  Voice vol (v)  Numeric variable (n)"
 
@@ -1256,6 +1260,8 @@ int PonscripterLabel::eventLoop()
     SDL_GetMouseState(&last_mouse_x, &last_mouse_y);
 
     while (SDL_WaitEvent(&event)) {
+        ImGui_ImplSDL2_ProcessEvent(&event);
+
         // ignore continous SDL_MOUSEMOTION
         while (event.type == SDL_MOUSEMOTION) {
             if (SDL_PeepEvents(&tmp_event, 1, SDL_PEEKEVENT, SDL_FIRSTEVENT, SDL_LASTEVENT) == 0) break;
@@ -1382,7 +1388,17 @@ int PonscripterLabel::eventLoop()
             flushEventSub(event);
             break;
 
-        case INTERNAL_REDRAW_EVENT:
+        case INTERNAL_REDRAW_EVENT: {
+            ImGui_ImplSDLRenderer2_NewFrame();
+            ImGui_ImplSDL2_NewFrame();
+            ImGui::NewFrame();
+
+            // Imgui commands
+            bool show_demo_window = true;
+            ImGui::ShowDemoWindow(&show_demo_window);
+
+            ImGui::Render();
+
             /* Handle cursor shifting for controller/keyboard button-based movement */
             if (first_buttonwait_mode_frame && using_buttonbased_movement && buttons.size() > 1) {
                 shiftCursorOnButton(0);
@@ -1420,6 +1436,7 @@ int PonscripterLabel::eventLoop()
                     last_refresh = current_time - (refresh_delay - 2);
                 }
             }
+
 
             SDL_PumpEvents();
             /* Remove all pending redraw events on the queue */
@@ -1462,6 +1479,7 @@ int PonscripterLabel::eventLoop()
             SDL_PushEvent(&tmp_event);
 
             break;
+        }
 
         case ONS_WAVE_EVENT:
             flushEventSub(event);
