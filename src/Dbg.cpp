@@ -55,6 +55,25 @@ void Debug::AddLog(std::string* message) {
     // this->messages.push_back(new_msg);
 }
 
+
+void renderAnimationImage(AnimationInfo* si) {
+    if (si == nullptr || si->image_texture == nullptr) {
+        return;
+    }
+
+    ImGui::Text("file_name: %s | image_name: %s", (const char *)si->file_name, (const char *)si->image_name);
+
+    float width = (float)si->image_surface->w;
+    float height = (float)si->image_surface->h;
+
+    float biggest_size = std::max(width, height);
+
+    float max_width = 100;
+    float scale_factor = max_width / biggest_size;
+
+    ImGui::Image(si->image_texture, ImVec2(width * scale_factor, height * scale_factor));
+}
+
 void Debug::DrawInspector() {
     ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiCond_FirstUseEver);
 
@@ -63,19 +82,23 @@ void Debug::DrawInspector() {
         return;
     }
 
-    ImGui::Text("Hello from inspector");
-
     SDL_RenderClear(this->ons->renderer);
-    for (size_t i = 0; i < 500; i++)
+    for (size_t i = 0; i < MAX_SPRITE_NUM; i++)
     {
         auto si = &this->ons->sprite_info[i];
+        renderAnimationImage(si);
+    }
 
-        if (si == nullptr || si->image_surface == nullptr) {
-            continue;
-        }
+    for (size_t i = 0; i < MAX_SPRITE2_NUM; i++)
+    {
+        auto si = &this->ons->sprite2_info[i];
+        renderAnimationImage(si);
+    }
 
-        ImGui::Text("file_name: %s | image_name: %s", (const char *)si->file_name, (const char *)si->image_name);
-        ImGui::Image(si->image_texture, ImVec2((float)si->image_surface->w, (float)si->image_surface->h));
+    for (size_t i = 0; i < 3; i++)
+    {
+        auto si = &this->ons->tachi_info[i];
+        renderAnimationImage(si);
     }
 
     ImGui::End();
