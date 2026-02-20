@@ -19,6 +19,8 @@ add_executable(ponscr
 	cp932_encoding.cpp
 	cp932_tables.h
 	defs.h
+	Dbg.cpp
+	Dbg.h
 	DirectReader.cpp
 	DirectReader.h
 	DirPaths.cpp
@@ -150,3 +152,24 @@ if (USE_CPU_GFX)
 		message(FATAL_ERROR "Unrecognized architecture ${CMAKE_SYSTEM_PROCESSOR}.  Disable USE_CPU_GFX to continue.")
 	endif()
 endif()
+
+include(FetchContent)
+FetchContent_Declare(imgui_external
+    URL https://github.com/SkyLeite/imgui/archive/bc51d937f348cb884dfb702b7e5f7522cdda51f2.zip
+	EXCLUDE_FROM_ALL
+)
+FetchContent_MakeAvailable(imgui_external)
+
+add_library(imgui
+	${imgui_external_SOURCE_DIR}/imgui.cpp
+	${imgui_external_SOURCE_DIR}/imgui_demo.cpp
+	${imgui_external_SOURCE_DIR}/imgui_draw.cpp
+	${imgui_external_SOURCE_DIR}/imgui_tables.cpp
+	${imgui_external_SOURCE_DIR}/imgui_widgets.cpp
+	${imgui_external_SOURCE_DIR}/backends/imgui_impl_sdl2.cpp
+	${imgui_external_SOURCE_DIR}/backends/imgui_impl_sdlrenderer2.cpp
+)
+target_link_libraries(imgui PUBLIC SDL2::Main)
+target_include_directories(imgui PUBLIC ${imgui_external_SOURCE_DIR})
+
+target_link_libraries(ponscr PUBLIC imgui)
