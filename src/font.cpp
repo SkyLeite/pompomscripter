@@ -22,6 +22,7 @@
 
 #include "defs.h"
 
+#include <loguru.hpp>
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include FT_OUTLINE_H
@@ -116,7 +117,7 @@ FontInternals::FontInternals(const Uint8* data, size_t len, const Uint8* mdat,
     met.memory_size = mlen;
     FT_Error err = FT_Open_Face(freetype, &args, 0, &face);
     if (err) {
-	fprintf(stderr, "ERROR: Failed to open face.\n");
+	LOG_F(INFO, "ERROR: Failed to open face.");
 	exit(1);
     }
 
@@ -130,7 +131,7 @@ Font::Font(const char* filename, const char* metrics)
     size_t len, mlen;
     FILE*  fp = fopen(filename, "rb");
     if (!fp) {
-	fprintf(stderr, "ERROR: This should never happen.\n");
+	LOG_F(INFO, "ERROR: This should never happen.");
 	exit(1);
     }
 
@@ -143,7 +144,7 @@ Font::Font(const char* filename, const char* metrics)
     if (metrics) {
         fp = fopen(metrics, "rb");
         if (!fp) {
-	    fprintf(stderr, "ERROR: This should never happen.\n");
+	    LOG_F(INFO, "ERROR: This should never happen.");
 	    exit(1);
 	}
 

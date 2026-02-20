@@ -135,7 +135,7 @@ int PonscripterLabel::loadSaveFile(int no)
     pstring filename;
     filename.format("save%d.dat", no);
     if (loadFileIOBuf(filename)) {
-        fprintf(stderr, "can't open save file save%d.dat\n", no);
+        LOG_F(INFO, "can't open save file save%d.dat", no);
         return -1;
     }
 
@@ -182,7 +182,7 @@ int PonscripterLabel::loadSaveFile(int no)
     }
 
     if (file_version > SAVEFILE_VERSION_MAJOR * 100 + SAVEFILE_VERSION_MINOR) {
-        fprintf(stderr, "Save file is newer than %d.%d, please use the "
+        LOG_F(INFO, "Save file is newer than %d.%d, please use the "
 		"latest Ponscripter.\n",
 		SAVEFILE_VERSION_MAJOR, SAVEFILE_VERSION_MINOR);
         return -1;
@@ -191,7 +191,7 @@ int PonscripterLabel::loadSaveFile(int no)
     if (file_version >= 200)
         return loadSaveFile2(file_type, file_version);
 
-    fprintf(stderr, "Old ONScripter save files are not supported. Please use "
+    LOG_F(INFO, "Old ONScripter save files are not supported. Please use "
 	    "ONScripter to finish your game, or start over.\n");
     return -1;
 }
@@ -229,7 +229,7 @@ int PonscripterLabel::saveSaveFile(int no, const char* savestr)
         memcpy(file_io_buf, save_data_buf, save_data_len);
         file_io_buf_ptr = save_data_len;
         if (saveFileIOBuf(filename, 0, savestr)) {
-            fprintf(stderr, "can't open save file save%d.dat for writing\n",
+            LOG_F(INFO, "can't open save file save%d.dat for writing",
                     no);
             return -1;
         }
@@ -237,7 +237,7 @@ int PonscripterLabel::saveSaveFile(int no, const char* savestr)
         size_t magic_len = 5;
         filename.format("sav" DELIMITER "save%d.dat", no);
         if (saveFileIOBuf(filename, magic_len, savestr))
-            fprintf(stderr, "can't open save file %s for writing (not an error)\n",  
+            LOG_F(INFO, "can't open save file %s for writing (not an error)",  
                 (const char*)filename);
     }
 

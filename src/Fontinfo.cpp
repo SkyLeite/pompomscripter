@@ -32,6 +32,7 @@
 #include "ScriptHandler.h"
 #include "resources.h"
 #include <math.h>
+#include <loguru.hpp>
 
 int screen_ratio1 = 1, screen_ratio2 = 1;
 
@@ -99,7 +100,7 @@ void MapMetrics(int id, const pstring& filename)
 Font* FontsStruct::font(int style)
 {
     if (!isinit) {
-        fprintf(stderr, "ERROR: fonts struct not initialised\n");
+        LOG_F(INFO, "ERROR: fonts struct not initialised");
         exit(1);
     }
     
@@ -180,7 +181,7 @@ Font* FontsStruct::font(int style)
         return font_[style];
     }
 
-    fprintf(stderr, "Error: failed to open font %s\n",
+    LOG_F(ERROR, "Error: failed to open font %s",
             (const char*) mapping[style]);
     exit(1);
 }

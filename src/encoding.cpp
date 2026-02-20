@@ -23,6 +23,7 @@
 
 #include "defs.h"
 #include "Fontinfo.h"
+#include <loguru.hpp>
 
 Encoding *file_encoding = 0; // the encoding used by the script file
 
@@ -210,7 +211,7 @@ int UTF8Encoding::Charsz_impl(const char* string, const Fontinfo* fi)
     }
     else {
         if ((c & 0xc0) == 0x80)
-            fprintf(stderr, "Warning: NextCharSize called on incomplete "
+            LOG_F(WARNING, "Warning: NextCharSize called on incomplete "
                             "character\n");
 
         const ligature* lig = ligs.find(string, fi);
@@ -282,7 +283,7 @@ wchar UTF8Encoding::Decode_impl(const char* string, int& bytes,
                 save = string[128];
                 *(char*)(string + 128) = 0;
             }
-            fprintf(stderr, "Warning: UTF8Encoding::Decode called on "
+            LOG_F(WARNING, "Warning: UTF8Encoding::Decode called on "
                     "incomplete character (string: %s)\n", string);
             if (save) *(char*)(string + 128) = save;
         }
@@ -401,15 +402,15 @@ void Encoding::SetStyle(int& style, const char flag)
     case 's': style ^= Sans;    return;
     case '+': case '-':   case '*': case '/':
     case 'x': case 'y': case 'n': case 'u':
-        fprintf(stderr, "Warning: tag ~%c~ cannot be used in this context\n",
+        LOG_F(WARNING, "Warning: tag ~%c~ cannot be used in this context",
                 flag);
         return;
     case 'c':
     case 0:
-        fprintf(stderr, "Error: non-matching ~tags~\n");
+        LOG_F(ERROR, "Error: non-matching ~tags~");
         exit(1);
     default:
-        fprintf(stderr, "Warning: unknown tag ~%c~\n", flag);
+        LOG_F(WARNING, "Warning: unknown tag ~%c~", flag);
     }
 }
 
@@ -471,10 +472,10 @@ pstring Encoding::TranslateTag(const char* flag, int& in_len)
     case 'n': return "\x1f\x10";
     case 'u': return "\x1f\x11";
     case 0:
-        fprintf(stderr, "Error: non-matching ~tags~\n");
+        LOG_F(ERROR, "Error: non-matching ~tags~");
         exit(1);
     default:
-        fprintf(stderr, "Warning: unknown tag ~%c~\n", *flag);
+        LOG_F(WARNING, "Warning: unknown tag ~%c~", *flag);
         return "";
     }
 }

@@ -174,7 +174,7 @@ int ScriptParser::soundpressplginCommand(const pstring& cmd)
     // only nbzplgin.dll is supported
     opts[0].tolower();
     if (opts[0] != "nbzplgin.dll")
-        fprintf(stderr, " *** plugin %s is not available, ignored. ***\n",
+        LOG_F(INFO, " *** plugin %s is not available, ignored. ***",
 		(const char*) opts[0]);
     else
 	ScriptHandler::cBR->
@@ -427,7 +427,7 @@ int ScriptParser::nsaCommand(const pstring& cmd)
     delete ScriptHandler::cBR;
     ScriptHandler::cBR = new NsaReader(&archive_path, key_table);
     if (ScriptHandler::cBR->open(nsa_path, archive_type))
-        fprintf(stderr, " *** failed to open Nsa archive, ignored.  ***\n");
+        LOG_F(INFO, " *** failed to open Nsa archive, ignored.  ***");
 
     return RET_CONTINUE;
 }
@@ -1217,12 +1217,12 @@ int ScriptParser::arcCommand(const pstring& cmd)
         delete ScriptHandler::cBR;
         ScriptHandler::cBR = new SarReader(&archive_path, key_table);
         if (ScriptHandler::cBR->open(buf))
-            fprintf(stderr, " *** failed to open archive %s, ignored.  ***\n",
+            LOG_F(INFO, " *** failed to open archive %s, ignored.  ***",
 		    (const char*) buf);
     }
     else if (ScriptHandler::cBR->getArchiveName() == "sar") {
         if (ScriptHandler::cBR->open(buf)) {
-            fprintf(stderr, " *** failed to open archive %s, ignored.  ***\n",
+            LOG_F(INFO, " *** failed to open archive %s, ignored.  ***",
 		    (const char*) buf);
         }
     }

@@ -24,6 +24,8 @@
 
 #include "PonscripterLabel.h"
 
+#include <loguru.hpp>
+
 /* h_speedpercent <percent>
  *
  * Globally adjust all text speeds by <percent>; this conceptually
@@ -325,11 +327,11 @@ int PonscripterLabel::haeleth_hinting_modeCommand(const pstring& cmd)
     if (l == "light") hinting = LightHinting;
     else if (l == "full") hinting = FullHinting;
     else if (l == "none") hinting = NoHinting;
-    else fprintf(stderr, "Unknown hinting mode `%s'\n", (const char*) l);
+    else LOG_F(INFO, "Unknown hinting mode `%s'", (const char*) l);
     l = script_h.readStrValue();
     if (l == "integer") subpixel = false;
     else if (l == "float") subpixel = true;
-    else fprintf(stderr, "Unknown positioning mode `%s'\n", (const char*) l);
+    else LOG_F(INFO, "Unknown positioning mode `%s'", (const char*) l);
 
     if (script_h.hasMoreArgs()) {
 	l = script_h.readStrValue();
@@ -366,7 +368,7 @@ int PonscripterLabel::haeleth_ligate_controlCommand(const pstring& cmd)
 	else if (s == "punctuation") DefaultLigatures(2);
 	else if (s == "f_ligatures") DefaultLigatures(4);
 	else if (s == "specials")    DefaultLigatures(8);
-	else fprintf(stderr, "Unknown ligature set `%s'\n", (const char*) s);
+	else LOG_F(INFO, "Unknown ligature set `%s'", (const char*) s);
     }
     else {
 	Expression l = script_h.readExpr();
@@ -377,7 +379,7 @@ int PonscripterLabel::haeleth_ligate_controlCommand(const pstring& cmd)
 	else if (l.type() == Expression::String)
 	    AddLigature(s, file_encoding->DecodeChar(l.as_string()));
 	else
-	    fprintf(stderr, "Unknown character `%s'\n",
+	    LOG_F(INFO, "Unknown character `%s'",
 		    (const char*) l.debug_string());
     }
 
@@ -774,7 +776,7 @@ float PonscripterLabel::processMessage(pstring &buffer, pstring message, SaveFil
     buffer += buf;
     if (num_ind != NULL) *num_ind = num;
     if (debug_level > 0)
-        printf("processMessage: made '%s'\n", (const char*)buffer);
+        LOG_F(INFO, "processMessage: made '%s'", (const char*)buffer);
 
     return total_len;
 }

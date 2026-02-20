@@ -154,6 +154,7 @@ if (USE_CPU_GFX)
 endif()
 
 include(FetchContent)
+# Imgui
 FetchContent_Declare(imgui_external
     URL https://github.com/SkyLeite/imgui/archive/bc51d937f348cb884dfb702b7e5f7522cdda51f2.zip
 	EXCLUDE_FROM_ALL
@@ -173,3 +174,12 @@ target_link_libraries(imgui PUBLIC SDL2::Main)
 target_include_directories(imgui PUBLIC ${imgui_external_SOURCE_DIR})
 
 target_link_libraries(ponscr PUBLIC imgui)
+
+# Loguru
+FetchContent_Declare(LoguruGitRepo
+	GIT_REPOSITORY "https://github.com/emilk/loguru"
+	GIT_TAG        "master"
+)
+FetchContent_MakeAvailable(LoguruGitRepo)
+
+target_link_libraries(ponscr PRIVATE loguru::loguru)

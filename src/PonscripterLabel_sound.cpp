@@ -227,7 +227,7 @@ int PonscripterLabel::playSound(const pstring& filename, int format,
         if (music_cmd) {
             FILE* fp = fopen(script_h.save_path + TMP_MUSIC_FILE, "wb");
             if (fp == NULL) {
-                fprintf(stderr, "can't open temporary music file %s\n",
+                LOG_F(INFO, "can't open temporary music file %s",
                         TMP_MUSIC_FILE);
             }
             else {
@@ -260,7 +260,7 @@ int PonscripterLabel::playSound(const pstring& filename, int format,
     if (format & SOUND_MIDI) {
         FILE* fp = fopen(script_h.save_path + TMP_MIDI_FILE, "wb");
         if (fp == NULL) {
-            fprintf(stderr, "can't open temporary MIDI file %s\n",
+            LOG_F(INFO, "can't open temporary MIDI file %s",
                     TMP_MIDI_FILE);
         }
         else {
@@ -407,7 +407,7 @@ int PonscripterLabel::playExternalMusic(bool loop_flag)
 
     pstring music_filename = script_h.save_path + TMP_MUSIC_FILE;
     if ((music_info = Mix_LoadMUS(music_filename)) == NULL) {
-        fprintf(stderr, "can't load Music file %s\n",
+        LOG_F(INFO, "can't load Music file %s",
 		(const char*) music_filename);
         return -1;
     }
@@ -552,7 +552,7 @@ int PonscripterLabel::playMPEG(const pstring& filename, bool click_flag, bool lo
                 Mix_CloseAudio();
                 openAudio(wanted.freq, wanted.format, wanted.channels);
                 if (!audio_open_flag) {
-                  fprintf(stderr, "New format error, using old\n");
+                  LOG_F(INFO, "New format error, using old");
                     openAudio();
                     different_spec = false;
                 }
@@ -608,7 +608,7 @@ int PonscripterLabel::playMPEG(const pstring& filename, bool click_flag, bool lo
                     if (s == SDLK_m) {
                         volume_on_flag = !volume_on_flag;
                         SMPEG_setvolume(mpeg_sample, !volume_on_flag? 0 : music_volume);
-                        printf("turned %s volume mute\n", !volume_on_flag?"on":"off");
+                        LOG_F(INFO, "turned %s volume mute", !volume_on_flag?"on":"off");
                     }
                     if (s == SDLK_f) {
                         if (fullscreen_mode) menu_windowCommand("menu_window");
@@ -764,7 +764,7 @@ int PonscripterLabel::playMPEG(const pstring& filename, bool click_flag, bool lo
     }
 
 #else
-    fprintf(stderr, "mpegplay command is disabled.\n");
+    LOG_F(INFO, "mpegplay command is disabled.");
 #endif
 
 
@@ -795,7 +795,7 @@ void PonscripterLabel::playAVI(const pstring& filename, bool click_flag)
     }
 
 #else
-    fprintf(stderr, "avi command is disabled.\n");
+    LOG_F(INFO, "avi command is disabled.");
 #endif
 }
 

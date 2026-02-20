@@ -151,7 +151,7 @@ friend struct CBString;
 	unsigned int idx;
 	CBCharWriteProtected (const struct tagbstring& c, int i) : s(c), idx((unsigned int)i) {
 		if (idx == (unsigned) s.slen) {
-//			fprintf(stderr, "Reading null terminator\n");
+//			LOG_F(INFO, "Reading null terminator");
 		}
 		else if (idx > (unsigned) s.slen) {
 			bstringThrow ("character index out of bounds");

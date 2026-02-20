@@ -206,7 +206,7 @@ void PonscripterLabel::executeSystemSkip()
 void PonscripterLabel::executeSystemAutomode()
 {
     setAutoMode(true);
-    printf("systemcall_automode: change to automode\n");
+    LOG_F(INFO, "systemcall_automode: change to automode");
     leaveSystemCall();
 }
 

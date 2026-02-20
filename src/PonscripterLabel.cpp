@@ -370,7 +370,7 @@ static void SDL_Quit_Wrapper()
 #ifdef STEAM
 void PonscripterLabel::initSteam() {
     if(!SteamAPI_Init()) {
-      fprintf(stderr, "Unable to initialize steam; cloud and achievements won't work\n");
+      LOG_F(INFO, "Unable to initialize steam; cloud and achievements won't work");
     }
 }
 #endif
@@ -380,19 +380,19 @@ void PonscripterLabel::initSDL()
     /* ---------------------------------------- */
     /* Initialize SDL */
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_AUDIO) < 0) {
-        fprintf(stderr, "Couldn't initialize SDL: %s\n", SDL_GetError());
+        LOG_F(INFO, "Couldn't initialize SDL: %s", SDL_GetError());
         exit(-1);
     }
     atexit(SDL_Quit_Wrapper); // work-around for OS/2
 
 #ifdef ENABLE_JOYSTICK
     if (SDL_InitSubSystem(SDL_INIT_GAMECONTROLLER) == 0 && SDL_GameControllerOpen(0) != 0)
-        printf("Initialize GAMECONTROLLER\n");
+        LOG_F(INFO, "Initialize GAMECONTROLLER");
     else
-        fprintf(stderr, "Couldn't initialize SDL gamecontroller: %s\n", SDL_GetError());
+        LOG_F(INFO, "Couldn't initialize SDL gamecontroller: %s", SDL_GetError());
 
     if (SDL_InitSubSystem(SDL_INIT_JOYSTICK) == 0 && SDL_JoystickOpen(0) != 0)
-        printf("Initialize JOYSTICK\n");
+        LOG_F(INFO, "Initialize JOYSTICK");
 #endif
 
 #if defined (PSP) || defined (IPODLINUX)
@@ -417,7 +417,7 @@ void PonscripterLabel::initSDL()
     SDL_Rect **modes;
     modes = SDL_ListModes(NULL, 0);
     if (modes == (SDL_Rect **)0){
-        fprintf(stderr, "No Video mode available.\n");
+        LOG_F(INFO, "No Video mode available.");
         exit(-1);
     }
     else if (modes == (SDL_Rect **)-1){
@@ -482,7 +482,7 @@ void PonscripterLabel::initSDL()
 
     renderer = SDL_CreateRenderer(screen, -1, SDL_RENDERER_PRESENTVSYNC);
     if(renderer == NULL) {
-      fprintf(stderr, "Couldn't create SDL renderer: %s\n", SDL_GetError());
+      LOG_F(INFO, "Couldn't create SDL renderer: %s", SDL_GetError());
       exit(-1);
     }
 
@@ -491,13 +491,13 @@ void PonscripterLabel::initSDL()
     screen_tex = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_ARGB8888,
         SDL_TEXTUREACCESS_STREAMING, screen_width, screen_height);
     if(screen_tex == 0) {
-      fprintf(stderr, "Couldn't create SDL texture: %s\n", SDL_GetError());
+      LOG_F(INFO, "Couldn't create SDL texture: %s", SDL_GetError());
       exit(-1);
     }
 
     SDL_SetTextureBlendMode(screen_tex, SDL_BLENDMODE_NONE);
     if(screen_tex == 0) {
-      fprintf(stderr, "Couldn't set SDL texture blend mode: %s\n", SDL_GetError());
+      LOG_F(INFO, "Couldn't set SDL texture blend mode: %s", SDL_GetError());
       exit(-1);
     }
 
@@ -515,7 +515,7 @@ void PonscripterLabel::initSDL()
     underline_value = screen_height - 1;
 
     //if (screen_surface == 0) {
-    //    fprintf(stderr, "Couldn't set %dx%dx%d video mode: %s\n",
+    //    LOG_F(INFO, "Couldn't set %dx%dx%d video mode: %s",
     //            screen_width, screen_height, screen_bpp, SDL_GetError());
     //    exit(-1);
     //}
@@ -579,7 +579,7 @@ void PonscripterLabel::initSDL()
     SDL_RenderClear(renderer);
 
     // Imgui
-    fprintf(stderr, "Creating imgui context\n");
+    LOG_F(INFO, "Creating imgui context");
     IMGUI_CHECKVERSION();
     ImGui::CreateContext();
     ImGuiIO &io = ImGui::GetIO();
@@ -605,7 +605,7 @@ void PonscripterLabel::initSDL()
 void PonscripterLabel::openAudio(int freq, Uint16 format, int channels)
 {
     if (Mix_OpenAudio(freq, format, channels, DEFAULT_AUDIOBUF) < 0) {
-        fprintf(stderr, "Couldn't open audio device!\n"
+        LOG_F(INFO, "Couldn't open audio device!"
                         "  reason: [%s].\n", SDL_GetError());
         audio_open_flag = false;
     }
@@ -685,7 +685,7 @@ void PonscripterLabel::setArchivePath(const pstring& path)
 {
     archive_path.clear();
     archive_path.add(path);
-    printf("archive_path: %s\n", (const char*)(archive_path.get_all_paths()));
+    LOG_F(INFO, "archive_path: %s", (const char*)(archive_path.get_all_paths()));
 }
 
 
@@ -753,7 +753,7 @@ void PonscripterLabel::disableCpuGfx()
 void PonscripterLabel::recordRenderTimes(const char* file) {
     renderTimesFile = fopen(file, "w");
     if (!renderTimesFile) {
-        fprintf(stderr, "Failed to open %s to record render times to, disabling\n", file);
+        LOG_F(INFO, "Failed to open %s to record render times to, disabling", file);
     }
     fputs("Frame,Type,Time\n", renderTimesFile);
 }
@@ -787,7 +787,7 @@ int makeFolder(pstring *path) {
     if(CreateDirectory(*path, NULL) == 0) {
         DWORD err = GetLastError();
         if(err != ERROR_ALREADY_EXISTS) {
-          fprintf(stderr, "Warning, unable to create directory: %s\n", path->data);
+          LOG_F(INFO, "Warning, unable to create directory: %s", path->data);
           return 1;
         }
     }
@@ -798,14 +798,14 @@ int makeFolder(pstring *path) {
     using namespace Carbon;
     if (mkdir(*path, 0755) == 0 || errno == EEXIST)
         return 0;
-    fprintf(stderr, "Warning, unable to create directory: %s\n", path->data);
+    LOG_F(INFO, "Warning, unable to create directory: %s", path->data);
     return 1;
 }
 #else // Linux
 int makeFolder(pstring *path) {
     if (mkdir(*path, 0755) == 0 || errno == EEXIST)
         return 0;
-    fprintf(stderr, "Warning, unable to create directory: %s\n", path->data);
+    LOG_F(INFO, "Warning, unable to create directory: %s", path->data);
     return 1;
 }
 #endif
@@ -879,7 +879,7 @@ pstring Local_GetSavePathParent() // POSIX-ish version
         readLen = readlink("/proc/self/exe", programPath, pathLen);
     }
     if(readLen == -1) {
-        fprintf(stderr, "Error getting current program path. Saves might not work\n");
+        LOG_F(INFO, "Error getting current program path. Saves might not work");
         return "";
     }
 
@@ -966,7 +966,7 @@ pstring Steam_GetSavePath(const pstring& local_savedir) {
         exit(-1);
     }
 
-    fprintf(stderr, "Unable to get steam's save path; falling back to relative save path.\n");
+    LOG_F(INFO, "Unable to get steam's save path; falling back to relative save path.");
     return Local_GetSavePath(local_savedir);
 }
 
@@ -1043,7 +1043,7 @@ pstring Platform_GetSavePath(pstring gameid) // MacOS X version
 pstring Platform_GetSavePath(pstring gameid) // POSIX version
 {
     if (!gameid) {
-        fprintf(stderr, "No gameid\n");
+        LOG_F(INFO, "No gameid");
         exit(1);
     }
 
@@ -1062,7 +1062,7 @@ pstring Platform_GetSavePath(pstring gameid) // POSIX version
     }
     // Error; either getpwuid failed, or we couldn't create a save
     // directory.  Either way, issue a warning and then give up.
-    fprintf(stderr, "Warning: could not create save directory ~/.%s.\n",
+    LOG_F(WARNING, "Warning: could not create save directory ~/.%s.",
             (const char*) gameid);
     return "";
 }
@@ -1382,7 +1382,7 @@ void PonscripterLabel::reset()
     if ((loadFileIOBuf("gloval.sav") == 0) ||
         (loadFileIOBuf("global.sav") == 0)) {
         readVariables(script_h.global_variable_border, VARIABLE_RANGE);
-        printf("Read global variables file\n");
+        LOG_F(INFO, "Read global variables file");
     }
 }
 
@@ -1516,7 +1516,7 @@ void PonscripterLabel::flushDirect(SDL_Rect &rect, int refresh_mode, bool update
     px += accumulation_surface->format->BytesPerPixel * r.x;
     Uint64 begin = renderTimesFile ? SDL_GetPerformanceCounter() : 0;
     if(SDL_UpdateTexture(screen_tex, &r, px, accumulation_surface->pitch)) {
-        fprintf(stderr,"Error updating texture: %s\n", SDL_GetError());
+        LOG_F(INFO,"Error updating texture: %s", SDL_GetError());
     }
     if (renderTimesFile) {
         float msElapsed = (SDL_GetPerformanceCounter() - begin) * perfMultiplier;
@@ -1673,7 +1673,7 @@ void PonscripterLabel::executeLabel()
             cmd.trunc(32);
             for (int i = 0; i < cmd.length(); ++i)
                 if (cmd[i] == ' ' || cmd[i] == '\n') { cmd.trunc(i); break; }
-            printf("*****  executeLabel %s:%d/%d:%d:%d [%s] *****\n",
+            LOG_F(INFO, "*****  executeLabel %s:%d/%d:%d:%d [%s] *****",
                    (const char*) current_label_info.name,
                    current_line,
                    current_label_info.num_of_lines,
@@ -1738,7 +1738,7 @@ void PonscripterLabel::executeLabel()
         goto executeLabelTop;
     }
 
-    fprintf(stderr, " ***** End *****\n");
+    LOG_F(INFO, " ***** End *****");
     endCommand("end");
 }
 
@@ -1824,7 +1824,7 @@ int PonscripterLabel::parseLine()
         PonscrFun f = func_lut.get(cmd);
         if (f) {
             if (is_orig_cmd && (debug_level > 0)) {
-                printf("** executing builtin command '%s' **\n",
+                LOG_F(INFO, "** executing builtin command '%s' **",
                        (const char*) cmd);
                 fflush(stdout);
             }

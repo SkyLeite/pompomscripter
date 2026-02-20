@@ -371,7 +371,7 @@ readTokenTop:
         if (!no_kidoku) markAsKidoku(buf++);
     }
     else if (ch != '\0') {
-        fprintf(stderr, "readToken: skip unknown heading character %c (%x)\n",
+        LOG_F(INFO, "readToken: skip unknown heading character %c (%x)",
 		ch, ch);
         buf++;
         goto readTokenTop;
@@ -664,7 +664,7 @@ void ScriptHandler::saveKidokuData()
     FILE* fp;
     pstring fnam = "kidoku.dat";
     if ((fp = fileopen(fnam, "wb", true, true)) == NULL) {
-        fprintf(stderr, "can't write kidoku.dat\n");
+        LOG_F(INFO, "can't write kidoku.dat");
         return;
     }
 
@@ -821,7 +821,7 @@ int ScriptHandler::readScriptSub(FILE* fp, char** buf, int encrypt_mode, bool is
             else if ((ch == char(0xbb)) && (bom_check == 1))
                 bom_check = 2;
             else if ((ch == char(0xbf)) && (bom_check == 2)) {
-                //fprintf(stderr,"readScriptSub: found UTF-8 BOM, backtracking\n");
+                //LOG_F(INFO,"readScriptSub: found UTF-8 BOM, backtracking");
                 *buf -= 3;
                 bom_check = 0;
             } else
@@ -856,7 +856,7 @@ int ScriptHandler::readScript(DirPaths *path, const char* prefer_name)
             else {
                 n = archive_path->get_num_paths(); //to only check once
                 script_path = fname.midstr(0, fname.find(DELIMITER));
-                printf("got preferred script_path '%s'\n", (const char*)script_path);
+                LOG_F(INFO, "got preferred script_path '%s'", (const char*)script_path);
             }
         
             if ((fp = fopen(fname, "rb")) != NULL) {
@@ -882,7 +882,7 @@ int ScriptHandler::readScript(DirPaths *path, const char* prefer_name)
                 }
             }
             else {
-                fprintf(stderr, "Can't find script named `%s'\n", prefer_name);
+                LOG_F(INFO, "Can't find script named `%s'", prefer_name);
                 return -1;
             }
         }
@@ -1151,7 +1151,7 @@ ScriptHandler::LabelInfo ScriptHandler::lookupLabelNext(const pstring& label)
 
 void ScriptHandler::errorAndExit(pstring s)
 {
-    fprintf(stderr, "Script error (line %d): %s\n(String buffer: [%s])\n",
+    LOG_F(INFO, "Script error (line %d): %s(String buffer: [%s])",
             getLineByAddress(getCurrent(), true),
             (const char*) s, (const char*) string_buffer);
     exit(-1);
@@ -1159,7 +1159,7 @@ void ScriptHandler::errorAndExit(pstring s)
 
 void ScriptHandler::errorWarning(pstring s)
 {
-    fprintf(stderr, "Warning (line %d): %s\n",
+    LOG_F(INFO, "Warning (line %d): %s",
             getLineByAddress(getCurrent(), true),
             (const char*) s);
 }
@@ -1431,7 +1431,7 @@ int ScriptHandler::parseInt(const char** buf)
 
 	    numalias_t::iterator a = num_aliases.find(alias_buf);
 	    if (a == num_aliases.end()) {
-                printf("can't find num alias for %s... assume 0.\n",
+                LOG_F(INFO, "can't find num alias for %s... assume 0.",
 		       (const char*) alias_buf);
                 current_variable.type = VAR_NONE;
                 *buf = buf_start;
@@ -1635,7 +1635,7 @@ void ScriptHandler::LogInfo::write(ScriptHandler& h)
 	fclose(f);
     }
     else {
-        fprintf(stderr, "can't write %s\n", (const char*) filename);
+        LOG_F(INFO, "can't write %s", (const char*) filename);
         exit(-1);
     }
 }
@@ -1724,7 +1724,5 @@ aliases_t::aliases_t() {
 void ScriptHandler::checkalias(const pstring& alias)
 {
     if (dodgy.aliases.find(alias) != dodgy.aliases.end())
-	fprintf(stderr,
-		"Warning: alias `%s' may conflict with some barewords\n",
-		(const char*) alias);
+	LOG_F(WARNING, "Warning: alias `%s' may conflict with some barewords", (const char*) alias);
 }

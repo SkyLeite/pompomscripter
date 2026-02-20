@@ -34,6 +34,7 @@
 
 #include "graphics_accelerated.h"
 #include "Dbg.h"
+#include <loguru.hpp>
 
 #if defined(USE_X86_GFX)
 #include "graphics_mmx.h"
@@ -73,7 +74,7 @@ AnimationInfo::AnimationInfo(const AnimationInfo &anim)
     //deepcopy(anim);
     memcpy(this, &anim, sizeof(AnimationInfo));
     is_copy = true;
-    printf("animinfo '%s': made a copy (constr)\n", (const char*)anim.image_name);
+    LOG_F(INFO, "animinfo '%s': made a copy (constr)", (const char*)anim.image_name);
     fflush(stdout);
 }
 
@@ -142,11 +143,11 @@ void AnimationInfo::reset()
     // See lame excuses in header.
     int prevent_deadlock = 0;
     if (locked)
-        fprintf(stderr, "Resetting an AnimationInfo that's still in use! Don't worry, I noticed in time.\n");
+        LOG_F(INFO, "Resetting an AnimationInfo that's still in use! Don't worry, I noticed in time.");
     while (locked) {
         msleep(1);
         if (++prevent_deadlock > 2000) {
-            fprintf(stderr, "AnimationInfo is deadlocked, expect trouble\n");
+            LOG_F(INFO, "AnimationInfo is deadlocked, expect trouble");
             locked = 0;
             break;
         }
@@ -1025,7 +1026,7 @@ void AnimationInfo::setupImage( SDL_Surface *surface, SDL_Surface *surface_m,
 
     image_texture = SDL_CreateTextureFromSurface(renderer, image_surface);
     if (image_texture == NULL) {
-        fprintf(stderr, "Error creating texture: %s", SDL_GetError());
+        LOG_F(INFO, "Error creating texture: %s", SDL_GetError());
     }
 
 #ifdef BPP16

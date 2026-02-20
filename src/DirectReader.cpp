@@ -25,6 +25,7 @@
 
 #include "DirectReader.h"
 #include <stdio.h>
+#include <loguru.hpp>
 #include <bzlib.h>
 #if !defined (WIN32) && !defined (PSP) && !defined (__OS2__)
 #include <dirent.h>
@@ -394,7 +395,7 @@ pstring DirectReader::convertFromSJISToUTF8(const pstring& src)
 size_t DirectReader::decodeNBZ(FILE* fp, size_t offset, unsigned char* buf)
 {
     if (key_table_flag)
-        fprintf(stderr, "may not decode NBZ with key_table enabled.\n");
+        LOG_F(INFO, "may not decode NBZ with key_table enabled.");
 
     unsigned int original_length, count;
     BZFILE* bfp;

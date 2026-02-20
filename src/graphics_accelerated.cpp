@@ -149,18 +149,18 @@ AcceleratedGraphicsFunctions AcceleratedGraphicsFunctions::accelerated() {
         }
     }
     if (__get_cpuid(1, &eax, &ebx, &ecx, &edx) != 0) {
-        printf("System info: Intel CPU, with functions: ");
+        LOG_F(INFO, "System info: Intel CPU, with functions: ");
         if (_M_SSE >= 0x001 || edx & bit_MMX) {
-            printf("MMX ");
+            LOG_F(INFO, "MMX ");
             out._imageFilterMean = imageFilterMean_MMX;
             out._imageFilterAddTo = imageFilterAddTo_MMX;
             out._imageFilterSubFrom = imageFilterSubFrom_MMX;
         }
         if (_M_SSE >= 0x100 || edx & bit_SSE) {
-            printf("SSE ");
+            LOG_F(INFO, "SSE ");
         }
         if (_M_SSE >= 0x200 || edx & bit_SSE2) {
-            printf("SSE2 ");
+            LOG_F(INFO, "SSE2 ");
             out._imageFilterMean = imageFilterMean_SSE2;
             out._imageFilterAddTo = imageFilterAddTo_SSE2;
             out._imageFilterSubFrom = imageFilterSubFrom_SSE2;
@@ -169,12 +169,12 @@ AcceleratedGraphicsFunctions AcceleratedGraphicsFunctions::accelerated() {
             out._alphaMaskBlendConst = alphaMaskBlendConst_SSE2;
         }
         if (_M_SSE >= 0x301 || hasFastPSHUFB(mf, eax, ecx)) {
-            printf("SSSE3 ");
+            LOG_F(INFO, "SSSE3 ");
             out._imageFilterBlend = imageFilterBlend_SSSE3;
             out._alphaMaskBlend = alphaMaskBlend_SSSE3;
             out._alphaMaskBlendConst = alphaMaskBlendConst_SSSE3;
         }
-        printf("\n");
+        LOG_F(INFO, "");
     }
 #elif defined(USE_PPC_GFX)
     bool has_altivec = false;
@@ -189,9 +189,9 @@ AcceleratedGraphicsFunctions AcceleratedGraphicsFunctions::accelerated() {
 #  endif
         if (hwcap & PPC_FEATURE_HAS_ALTIVEC) {
             has_altivec = true;
-            printf("System info: PowerPC CPU, supports altivec\n");
+            LOG_F(INFO, "System info: PowerPC CPU, supports altivec");
         } else {
-            printf("System info: PowerPC CPU, DOES NOT support altivec\n");
+            LOG_F(INFO, "System info: PowerPC CPU, DOES NOT support altivec");
         }
     }
 # elif defined(MACOSX) || defined(__FreeBSD__) || defined(__NetBSD__) || defined(__OpenBSD__)
@@ -213,9 +213,9 @@ AcceleratedGraphicsFunctions AcceleratedGraphicsFunctions::accelerated() {
         }
         if (altivec_present) {
             has_altivec = true;
-            printf("System info: PowerPC CPU, supports altivec\n");
+            LOG_F(INFO, "System info: PowerPC CPU, supports altivec");
         } else {
-            printf("System info: PowerPC CPU, DOES NOT support altivec\n");
+            LOG_F(INFO, "System info: PowerPC CPU, DOES NOT support altivec");
         }
     }
 # endif

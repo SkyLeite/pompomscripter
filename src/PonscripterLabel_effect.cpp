@@ -75,7 +75,7 @@ int PonscripterLabel::setEffect(Effect& effect, bool generate_effect_dst, bool u
         dll = bstr2cstr(&effect.anim.image_name, '0'); // TODO: Make dll a bstring natively
         if (dll != NULL) { //just in case no dll is given
             if (debug_level > 0)
-                printf("dll effect: Got dll/params '%s'\n", dll);
+                LOG_F(INFO, "dll effect: Got dll/params '%s'", dll);
 
             params = dll;
             while (*params != 0 && *params != '/') params++;
@@ -271,12 +271,12 @@ int PonscripterLabel::doEffect(Effect& effect, bool clear_dirty_region)
                 break;
             } else {
                 if (first_time) {
-                    printf("Effect %d, DLL emulation not found: %s\n", effect_no, dll);
+                    LOG_F(INFO, "Effect %d, DLL emulation not found: %s", effect_no, dll);
                 }
             }
         } else { //just in case no dll is given
             if (first_time) {
-                printf("effect No. %d, but no DLL name supplied.\n", effect_no);
+                LOG_F(INFO, "effect No. %d, but no DLL name supplied.", effect_no);
             }
         }
 
@@ -284,7 +284,7 @@ int PonscripterLabel::doEffect(Effect& effect, bool clear_dirty_region)
 
     default:
         if (first_time) {
-            printf("effect No. %d is not implemented. Crossfade is substituted for that.\n", effect_no);
+            LOG_F(INFO, "effect No. %d is not implemented. Crossfade is substituted for that.", effect_no);
         }
 
     case 10: // Cross fade

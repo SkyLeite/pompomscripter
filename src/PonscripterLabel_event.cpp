@@ -813,7 +813,7 @@ void PonscripterLabel::keyPressEvent(SDL_KeyboardEvent* event)
         if (event->keysym.sym == SDLK_m) {
             volume_on_flag = !volume_on_flag;
             setVolumeMute(!volume_on_flag);
-            printf("turned %s volume mute\n", !volume_on_flag?"on":"off");
+            LOG_F(INFO, "turned %s volume mute", !volume_on_flag?"on":"off");
             automode_ignore = true;
         }
 
@@ -1305,7 +1305,7 @@ int PonscripterLabel::eventLoop()
         case SDL_CONTROLLERBUTTONDOWN:
             using_buttonbased_movement = true;
             event.key.type = SDL_KEYUP;
-            // printf("Controller button press: %s\n", SDL_GameControllerGetStringForButton((SDL_GameControllerButton)event.cbutton.button));
+            // LOG_F(INFO, "Controller button press: %s", SDL_GameControllerGetStringForButton((SDL_GameControllerButton)event.cbutton.button));
             event.key.keysym.sym = transControllerButton(event.cbutton.button);
             if (event.key.keysym.sym == SDLK_UNKNOWN)
                 break;
@@ -1320,7 +1320,7 @@ int PonscripterLabel::eventLoop()
         case SDL_CONTROLLERBUTTONUP:
             using_buttonbased_movement = true;
             event.key.type = SDL_KEYDOWN;
-            // printf("Controller button release: %s\n", SDL_GameControllerGetStringForButton((SDL_GameControllerButton)event.cbutton.button));
+            // LOG_F(INFO, "Controller button release: %s", SDL_GameControllerGetStringForButton((SDL_GameControllerButton)event.cbutton.button));
             event.key.keysym.sym = transControllerButton(event.cbutton.button);
             if (event.key.keysym.sym == SDLK_UNKNOWN)
                 break;

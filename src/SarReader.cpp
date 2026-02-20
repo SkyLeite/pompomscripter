@@ -24,6 +24,8 @@
  */
 
 #include "SarReader.h"
+
+#include <loguru.hpp>
 #define WRITE_LENGTH 4096
 
 SarReader::SarReader(DirPaths *path, const unsigned char* key_table)
@@ -275,7 +277,7 @@ SarReader::FileInfo SarReader::getFileByIndex(unsigned int index)
         info = info->next;
     }
 
-    fprintf(stderr, "SarReader::getFileByIndex  Index %d is out of range\n",
+    LOG_F(INFO, "SarReader::getFileByIndex  Index %d is out of range",
 	    index);
 
     return archive_info.fi_list[index];

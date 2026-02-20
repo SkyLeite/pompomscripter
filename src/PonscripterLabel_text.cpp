@@ -513,7 +513,7 @@ int PonscripterLabel::processText()
         string_buffer_restore = -1;
     }
     if (debug_level > 1) {
-        fprintf(stderr,"processText: %d:'%s", string_buffer_offset, script_h.getStrBuf(string_buffer_offset));
+        LOG_F(INFO,"processText: %d:'%s", string_buffer_offset, script_h.getStrBuf(string_buffer_offset));
     }
     if (event_mode & (WAIT_INPUT_MODE | WAIT_SLEEP_MODE)) {
         draw_cursor_flag = false;

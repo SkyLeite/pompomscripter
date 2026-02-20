@@ -29,6 +29,7 @@
 #include "Dbg.h"
 
 #include <cstdio>
+#include <loguru.hpp>
 
 #define CFG_FILE "pns.cfg"
 
@@ -37,58 +38,58 @@ static void optionHelp()
 //Mion: a number of these options are stubs; will be commented-out
 // in this function until they are actually implemented
 #ifdef PNS_CODENAME
-    printf("Ponscripter version %s '%s' (NScr %d.%02d)\n",
+    LOG_F(INFO, "Ponscripter version %s '%s' (NScr %d.%02d)",
         PNS_VERSION, PNS_CODENAME, NSC_VERSION / 100, NSC_VERSION % 100);
 #else
-    printf("Ponscripter version %s (NScr %d.%02d)\n",
+    LOG_F(INFO, "Ponscripter version %s (NScr %d.%02d)",
         PNS_VERSION, NSC_VERSION / 100, NSC_VERSION % 100);
 #endif
-    printf("Usage: ponscripter [option ...] [root path]\n");
-    printf("      --registry file\tset a registry file\n");
-    printf("      --dll file\tset a dll file\n");
-    printf("  -r, --root path\tset the root path to the archives\n");
-    printf("  -s, --save path\tset the path to use for saved games"
+    LOG_F(INFO, "Usage: ponscripter [option ...] [root path]");
+    LOG_F(INFO, "      --registry file\tset a registry file");
+    LOG_F(INFO, "      --dll file\tset a dll file");
+    LOG_F(INFO, "  -r, --root path\tset the root path to the archives");
+    LOG_F(INFO, "  -s, --save path\tset the path to use for saved games"
            "(default: platform-dependent)\n");
 #if defined WIN32
-    printf("      --current-user-appdata\tuse the current user's AppData"
+    LOG_F(INFO, "      --current-user-appdata\tuse the current user's AppData"
             " folder instead of AllUsers' AppData\n");
 #endif
-    printf("      --script path\tset the script filename\n");
-//    printf("      --use-app-icons\tuse the icns for the current application,"
+    LOG_F(INFO, "      --script path\tset the script filename");
+//    LOG_F(INFO, "      --use-app-icons\tuse the icns for the current application,"
 //           " if bundled/embedded\n");
-    printf("      --fullscreen\tstart in fullscreen mode\n");
-    printf("      --window\t\tstart in windowed mode\n");
+    LOG_F(INFO, "      --fullscreen\tstart in fullscreen mode");
+    LOG_F(INFO, "      --window\t\tstart in windowed mode");
 #ifndef PDA
 //    printf( "      --window-width width\t\tset preferred window width\n");
 #endif
-    printf("      --gameid id\t\tset game identifier (like with game.id)\n");
-    printf("      --force-png-alpha\t\talways use PNG alpha channels\n");
-    printf("      --force-png-nscmask\talways use NScripter-style masks\n");
-    printf("      --force-button-shortcut\tignore useescspc and getenter "
+    LOG_F(INFO, "      --gameid id\t\tset game identifier (like with game.id)");
+    LOG_F(INFO, "      --force-png-alpha\t\talways use PNG alpha channels");
+    LOG_F(INFO, "      --force-png-nscmask\talways use NScripter-style masks");
+    LOG_F(INFO, "      --force-button-shortcut\tignore useescspc and getenter "
            "command\n");
 #ifdef USE_X86_GFX
-    printf("      --disable-cpu-gfx\tdo not use MMX/SSE2 graphics "
+    LOG_F(INFO, "      --disable-cpu-gfx\tdo not use MMX/SSE2 graphics "
            "acceleration routines\n");
 #elif  USE_PPC_GFX
-    printf("      --disable-cpu-gfx\tdo not use Altivec graphics "
+    LOG_F(INFO, "      --disable-cpu-gfx\tdo not use Altivec graphics "
            "acceleration routines\n");
 #endif
-    printf("      --record-render-time\tRecord render times to the given csv file\n");
-    printf("      --enable-wheeldown-advance\tadvance the text on mouse "
+    LOG_F(INFO, "      --record-render-time\tRecord render times to the given csv file");
+    LOG_F(INFO, "      --enable-wheeldown-advance\tadvance the text on mouse "
            "wheeldown event\n");
-//    printf("      --nsa-offset offset\tuse byte offset x when reading "
+//    LOG_F(INFO, "      --nsa-offset offset\tuse byte offset x when reading "
 //           "arc*.nsa files\n");
-//    printf("      --allow-break-outside-loop\tsyntax option for allowing "
+//    LOG_F(INFO, "      --allow-break-outside-loop\tsyntax option for allowing "
 //           "break or next when not in a for loop\n");
-//    printf("      --allow-color-type-only\tsyntax option for only "
+//    LOG_F(INFO, "      --allow-color-type-only\tsyntax option for only "
 //           "recognizing color type for color arguments\n");
-//    printf("      --set-tag-page-origin-to-1\tsyntax option for setting "
+//    LOG_F(INFO, "      --set-tag-page-origin-to-1\tsyntax option for setting "
 //           "'gettaglog' origin to 1 instead of 0\n");
-//    printf("      --answer-dialog-with-yes-ok\thave 'yesnobox' and "
+//    LOG_F(INFO, "      --answer-dialog-with-yes-ok\thave 'yesnobox' and "
 //           "'okcancelbox' give 'yes/ok' result\n");
-    printf("  -d, --debug\t\trun in debug mode (repeat for verbosity)\n");
-    printf("  -h, --help\t\tshow this help and exit\n");
-    printf("  -v, --version\t\tshow the version information and exit\n");
+    LOG_F(INFO, "  -d, --debug\t\trun in debug mode (repeat for verbosity)");
+    LOG_F(INFO, "  -h, --help\t\tshow this help and exit");
+    LOG_F(INFO, "  -v, --version\t\tshow the version information and exit");
     exit(0);
 }
 
@@ -96,16 +97,16 @@ static void optionHelp()
 static void optionVersion()
 {
 #ifdef PNS_CODENAME
-    printf("Ponscripter version %s '%s' (NScr %d.%02d)\n",
+    LOG_F(INFO, "Ponscripter version %s '%s' (NScr %d.%02d)",
         PNS_VERSION, PNS_CODENAME, NSC_VERSION / 100, NSC_VERSION % 100);
 #else
-    printf("Ponscripter version %s (NScr %d.%02d)\n",
+    LOG_F(INFO, "Ponscripter version %s (NScr %d.%02d)",
         PNS_VERSION, NSC_VERSION / 100, NSC_VERSION % 100);
 #endif
-    printf("Based on ONScripter by Ogapee <ogapee@aqua.dti2.ne.jp>\n");
-    printf("Currently maintained by \"Uncle\" Mion Sonozaki <UncleMion@gmail.com>\n\n");
-    printf("Copyright (c) 2001-2011 Ogapee, 2006-2011 insani, Haeleth, Sonozaki et al.\n");
-    printf("This is free software; see the source for copying conditions.\n");
+    LOG_F(INFO, "Based on ONScripter by Ogapee <ogapee@aqua.dti2.ne.jp>");
+    LOG_F(INFO, "Currently maintained by \"Uncle\" Mion Sonozaki <UncleMion@gmail.com>");
+    LOG_F(INFO, "Copyright (c) 2001-2011 Ogapee, 2006-2011 insani, Haeleth, Sonozaki et al.");
+    LOG_F(INFO, "This is free software; see the source for copying conditions.");
     exit(0);
 }
 
@@ -188,7 +189,7 @@ static void parseOptions(int argc, char **argv, PonscripterLabel &ons,
 #if defined (USE_X86_GFX) || defined(USE_PPC_GFX)
             else if ( !strcmp( argv[0]+1, "-disable-cpu-gfx" ) ){
                 ons.disableCpuGfx();
-                printf("disabling CPU accelerated graphics routines\n");
+                LOG_F(INFO, "disabling CPU accelerated graphics routines");
             }
 #endif
             else if (!strcmp(argv[0] + 1, "-record-render-time")) {
@@ -226,7 +227,7 @@ static void parseOptions(int argc, char **argv, PonscripterLabel &ons,
                 ons.setMaskType(2);
             }
             else {
-                printf(" unknown option %s\n", argv[0]);
+                LOG_F(INFO, " unknown option %s", argv[0]);
             }
         }
         else if (!ons.hasArchivePath() || !preferred_script) {
@@ -287,7 +288,7 @@ static bool parseOptionFile(const char *filename, PonscripterLabel &ons,
         return false;
     }
 
-    printf("Reading command-line options from '%s'\n", filename);
+    LOG_F(INFO, "Reading command-line options from '%s'", filename);
     int numlines = 1;
     int curlen = 0, maxlen = 0;
     while (!feof(fp)) {
@@ -367,11 +368,13 @@ extern "C" int main(int argc, char** argv)
 int main(int argc, char** argv)
 #endif
 {
+    loguru::init(argc, argv);
+    loguru::add_file("latest_readable.log", loguru::Truncate, loguru::Verbosity_INFO);
+
     Debug debug;
     PonscripterLabel ons;
     debug.Init(&ons);
     pstring preferred_script = "";
-
 
 #ifdef PSP
     ons.disableRescale();

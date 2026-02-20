@@ -31,6 +31,7 @@
 #include <avm_output.h>
 #include <stdlib.h>
 #include <string.h>
+#include <loguru.hpp>
 #include "PonscripterUserEvents.h"
 
 #define DEFAULT_AUDIOBUF 4096
@@ -70,19 +71,19 @@ int AVIWrapper::init(char* filename, bool debug_flag)
 
     i_avi = CreateIAviReadFile(filename);
     if (i_avi == NULL || i_avi->IsValid() == false) {
-        fprintf(stderr, "can't CreateIAviReadFile from %s\n", filename);
+        LOG_F(INFO, "can't CreateIAviReadFile from %s", filename);
         return -1;
     }
 
     v_stream = i_avi->GetStream(0, AviStream::Video);
     if (v_stream == NULL) {
-        fprintf(stderr, "Video Stream is NULL\n");
+        LOG_F(INFO, "Video Stream is NULL");
         return -1;
     }
 
     width  = v_stream->GetStreamInfo()->GetVideoWidth();
     height = v_stream->GetStreamInfo()->GetVideoHeight();
-    if (debug_flag) fprintf(stderr, "width %d height %d\n", width, height);
+    if (debug_flag) LOG_F(INFO, "width %d height %d", width, height);
 
     return 0;
 }
@@ -96,13 +97,13 @@ int AVIWrapper::initAV(SDL_Surface* surface, bool audio_open_flag)
 
     v_stream->StartStreaming();
     if (v_stream->GetVideoDecoder() == NULL) {
-        if (debug_flag) fprintf(stderr, "GetVideoDecoder() return 0.\n");
+        if (debug_flag) LOG_F(INFO, "GetVideoDecoder() return 0.");
 
         return -1;
     }
 
     IVideoDecoder::CAPS cap = v_stream->GetVideoDecoder()->GetCapabilities();
-    if (debug_flag) printf("cap %x\n", cap);
+    if (debug_flag) LOG_F(INFO, "cap %x", cap);
 
     if (cap & IVideoDecoder::CAP_YV12) {
         v_stream->GetVideoDecoder()->SetDestFmt(0, fccYV12);
@@ -120,7 +121,7 @@ int AVIWrapper::initAV(SDL_Surface* surface, bool audio_open_flag)
 
     a_stream = i_avi->GetStream(0, AviStream::Audio);
     if (a_stream == NULL) {
-        if (debug_flag) fprintf(stderr, "Audio Stream is NULL\n");
+        if (debug_flag) LOG_F(INFO, "Audio Stream is NULL");
 
         return 0;
     }
@@ -128,10 +129,10 @@ int AVIWrapper::initAV(SDL_Surface* surface, bool audio_open_flag)
     a_stream->StartStreaming();
     WAVEFORMATEX wave_fmt;
     a_stream->GetAudioDecoder()->GetOutputFormat(&wave_fmt);
-    if (debug_flag) printf(" format %d ch %d sample %d bit %d avg Bps %d\n", wave_fmt.wFormatTag, wave_fmt.nChannels, wave_fmt.nSamplesPerSec, wave_fmt.wBitsPerSample, wave_fmt.nAvgBytesPerSec);
+    if (debug_flag) LOG_F(INFO, " format %d ch %d sample %d bit %d avg Bps %d", wave_fmt.wFormatTag, wave_fmt.nChannels, wave_fmt.nSamplesPerSec, wave_fmt.wBitsPerSample, wave_fmt.nAvgBytesPerSec);
 
     if (Mix_OpenAudio(wave_fmt.nSamplesPerSec, MIX_DEFAULT_FORMAT, wave_fmt.nChannels, DEFAULT_AUDIOBUF) < 0) {
-        fprintf(stderr, "can't open audio device\n");
+        LOG_F(INFO, "can't open audio device");
         a_stream->StopStreaming();
         delete a_stream;
         a_stream = NULL;

@@ -131,7 +131,7 @@ static void ShowError(const char *title, const char *message)
 #ifdef USE_MESSAGEBOX
     MessageBox(NULL, message, title, MB_ICONEXCLAMATION|MB_OK);
 #else
-    fprintf(stderr, "%s: %s\n", title, message);
+    LOG_F(INFO, "%s: %s", title, message);
 #endif
 }
 

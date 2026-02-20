@@ -26,6 +26,7 @@
 
 #include "MadWrapper.h"
 #include <mad.h>
+#include <loguru.hpp>
 
 #define DEFAULT_AUDIOBUF 4096
 #define INPUT_BUFFER_SIZE (5 * 8192)
@@ -140,7 +141,7 @@ int MAD_WRAPPER_playAudio(void* userdata, Uint8* stream, int len)
                 continue;
             }
             else {
-                fprintf(stderr, "unrecoverable frame level error (%s).\n",
+                LOG_F(INFO, "unrecoverable frame level error (%s).",
                     mad_stream_errorstr(&mad->Stream));
                 return 0; // error
             }
@@ -249,7 +250,7 @@ const char* MAD_WRAPPER_error(MAD_WRAPPER* mad)
 void mp3callback(void* userdata, Uint8* stream, int len)
 {
     if (MAD_WRAPPER_playAudio(userdata, stream, len) == 0) {
-        printf("end of file\n");
+        LOG_F(INFO, "end of file");
         exit(0);
     }
 }
@@ -258,7 +259,7 @@ void mp3callback(void* userdata, Uint8* stream, int len)
 int main(void)
 {
     if (SDL_Init(SDL_INIT_TIMER | SDL_INIT_AUDIO) < 0) {
-        fprintf(stderr,
+        LOG_F(INFO,
             "Couldn't initialize SDL: %s\n", SDL_GetError());
         exit(1);
     }
@@ -271,7 +272,7 @@ int main(void)
     Mix_HookMusic(mp3callback, mad);
 
     if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, DEFAULT_AUDIOBUF) < 0) {
-        fprintf(stderr, "Couldn't open audio device!\n"
+        LOG_F(INFO, "Couldn't open audio device!"
                         "  reason: [%s].\n", SDL_GetError());
         exit(-1);
     }
@@ -281,7 +282,7 @@ int main(void)
         int channels;
 
         Mix_QuerySpec(&freq, &format, &channels);
-        printf("Audio: %d Hz %d bit %s\n", freq,
+        LOG_F(INFO, "Audio: %d Hz %d bit %s", freq,
             (format & 0xFF),
             (channels > 1) ? "stereo" : "mono");
         audio_format.format = format;

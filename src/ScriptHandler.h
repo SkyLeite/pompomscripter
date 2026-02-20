@@ -31,6 +31,8 @@
 #include "DirPaths.h"
 #include "expression.h"
 
+#include <loguru.hpp>
+
 const int VARIABLE_RANGE = 4096;
 
 class ScriptHandler {
@@ -140,7 +142,7 @@ public:
     }
     inline const char* getStrBuf(int offset) {
 	if (offset < 0 || offset > string_buffer.length()) {
-	    fprintf(stderr, "getStrBuf outside buffer (offs %d, len %u)\n",
+	    LOG_F(INFO, "getStrBuf outside buffer (offs %d, len %u)",
 		    offset, string_buffer.length());
 	    if (offset < 0) offset = 0;
 	    else offset = string_buffer.length() - 1;
@@ -149,7 +151,7 @@ public:
     }
     inline char readStrBuf(int offset) {
 	if (offset < 0 || offset > string_buffer.length()) {
-	    fprintf(stderr, "readStrBuf outside buffer (offs %d, len %u)\n",
+	    LOG_F(INFO, "readStrBuf outside buffer (offs %d, len %u)",
 		    offset, string_buffer.length());
 	    return 0;
 	}
@@ -258,7 +260,7 @@ public:
         }
         void set_num(int val) {
             if (watch_int_variable >= 0)
-                fprintf(stderr, "WATCH (line %d): %%%d: %d -> %d\n",
+                LOG_F(INFO, "WATCH (line %d): %%%d: %d -> %d",
                         owner->getLineByAddress(owner->getCurrent(), true),
                         watch_int_variable, num, val);
             num = val;

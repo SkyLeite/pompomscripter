@@ -25,6 +25,8 @@
 
 #include "PonscripterLabel.h"
 
+#include <loguru.hpp>
+
 int PonscripterLabel::proceedAnimation()
 {
     int i, minimum_duration = -1;
@@ -392,7 +394,7 @@ void PonscripterLabel::parseTaggedString(AnimationInfo* anim, bool is_mask)
         anim->num_of_cells = getNumberFromBuffer((const char**) &buffer);
         buffer++;
         if (anim->num_of_cells == 0) {
-            fprintf(stderr, "PonscripterLabel::parseTaggedString  The number of cells is 0\n");
+            LOG_F(INFO, "PonscripterLabel::parseTaggedString  The number of cells is 0");
             return;
         }
 

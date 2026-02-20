@@ -245,7 +245,7 @@ SDL_Surface *PonscripterLabel::createSurfaceFromFile(const pstring& filename,
             (filename != DEFAULT_LOOKBACK_NAME3) &&
             (filename != DEFAULT_CURSOR0) &&
             (filename != DEFAULT_CURSOR1))
-            fprintf(stderr, " *** can't find file [%s] ***\n",
+            LOG_F(INFO, " *** can't find file [%s] ***",
                     (const char*) filename);
         return NULL;
     }
@@ -258,13 +258,13 @@ SDL_Surface *PonscripterLabel::createSurfaceFromFile(const pstring& filename,
     else {
         dat = script_h.cBR->getFile(alt_filename, location);
         if ((unsigned)dat.slen != length)
-            fprintf(stderr, "Warning: error reading from %s\n",
+            LOG_F(WARNING, "Warning: error reading from %s",
                     (const char*)alt_filename);
     }
 
     SDL_Surface* tmp = IMG_Load_RW(rwops(dat), 1);
     if (!tmp && file_extension(filename).caselessEqual("jpg")) {
-        fprintf(stderr, " *** force-loading a JPEG image [%s]\n",
+        LOG_F(INFO, " *** force-loading a JPEG image [%s]",
                 (const char*) filename);
         SDL_RWops* src = rwops(dat);
         tmp = IMG_LoadJPG_RW(src);
@@ -272,7 +272,7 @@ SDL_Surface *PonscripterLabel::createSurfaceFromFile(const pstring& filename,
     }
 
     if (!tmp)
-        fprintf(stderr, " *** can't load file [%s]: %s ***\n",
+        LOG_F(INFO, " *** can't load file [%s]: %s ***",
                 (const char*)filename, IMG_GetError());
 
     return tmp;

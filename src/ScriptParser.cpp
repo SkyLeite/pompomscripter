@@ -366,7 +366,7 @@ int ScriptParser::open(const char* preferred_script)
     for (int i=0; i<3; i++)
         humanpos[i] = (screen_width/4) * (i+1);
     if (debug_level > 0)
-        printf("humanpos: %d,%d,%d", humanpos[0], humanpos[1],
+        LOG_F(INFO, "humanpos: %d,%d,%d", humanpos[0], humanpos[1],
                humanpos[2]);
 
     return 0;
@@ -456,7 +456,7 @@ int ScriptParser::parseLine()
 {
     pstring cmd = script_h.getStrBuf();
     if (debug_level > 1) {
-        printf("ScriptParser::Parseline %s\n", (const char*) cmd);
+        LOG_F(INFO, "ScriptParser::Parseline %s", (const char*) cmd);
         fflush(stdout);
     }
 
@@ -479,7 +479,7 @@ int ScriptParser::parseLine()
     ParserFun f = func_lut.get(cmd);
     if (f) {
         if (is_orig_cmd && (debug_level > 0)) {
-            printf("** executing builtin command '%s' **\n",
+            LOG_F(INFO, "** executing builtin command '%s' **",
                    (const char*) cmd);
             fflush(stdout);
         }
@@ -496,7 +496,7 @@ int ScriptParser::getSystemCallNo(const pstring& buffer)
 	return e->second;
     }
     else {
-        printf("Unsupported system call %s\n", (const char*) buffer);
+        LOG_F(INFO, "Unsupported system call %s", (const char*) buffer);
         return -1;
     }
 }
@@ -520,7 +520,7 @@ void ScriptParser::saveGlobalData()
     writeVariables(script_h.global_variable_border, VARIABLE_RANGE, true);
 
     if (saveFileIOBuf("global.sav")) {
-        fprintf(stderr, "can't open global.sav for writing\n");
+        LOG_F(INFO, "can't open global.sav for writing");
         exit(-1);
     }
 }
@@ -576,7 +576,7 @@ int ScriptParser::saveFileIOBuf(const pstring& filename, int offset,
         if ((fputc('"', fp) == EOF)
             || (fwrite(savestr, 1, savelen, fp) != savelen)
             || (fputs("\"*", fp) == EOF))
-            fprintf(stderr, "Warning: error writing to %s\n", (const char*)filename);
+            LOG_F(WARNING, "Warning: error writing to %s", (const char*)filename);
     }
 
     fclose(fp);
@@ -746,10 +746,10 @@ void ScriptParser::readArrayVariable()
 
 void ScriptParser::errorAndCont(const char* why, const char* reason)
 {
-    fprintf(stderr, "Error at line %d: %s",
+    LOG_F(ERROR, "Error at line %d: %s",
 	    script_h.getLineByAddress(script_h.getCurrent(), true), why);
-    if (reason) fprintf(stderr, "; %s", reason);
-    fprintf(stderr, "\n(*%s line %d)\n",
+    if (reason) LOG_F(ERROR, "; %s", reason);
+    LOG_F(ERROR, "(*%s line %d)",
 	    (const char*) current_label_info.name, current_line);
 }
 
@@ -806,7 +806,7 @@ int ScriptParser::readEffect(Effect& effect)
             effect.anim.remove();
     }
     else if (effect.effect < 0 || effect.effect > 255) {
-        fprintf(stderr, "Effect %d out of range: using 0.\n", effect.effect);
+        LOG_F(INFO, "Effect %d out of range: using 0.", effect.effect);
         effect.effect = 0; // to suppress error
     }
     return num;
@@ -826,7 +826,7 @@ ScriptParser::Effect& ScriptParser::parseEffect(bool init_flag)
     for (Effect::iterator it = effects.begin(); it != effects.end(); ++it)
         if (*it && ((*it)->no == tmp_effect.effect)) return **it;
 
-    fprintf(stderr, "Effect No. %d is not found.\n", tmp_effect.effect);
+    LOG_F(INFO, "Effect No. %d is not found.", tmp_effect.effect);
     exit(-1);
 }
 
@@ -875,7 +875,7 @@ void ScriptParser::createKeyTable(const pstring& key_exe)
         fp = fopen(path, "rb");
     }
     if (fp == NULL) {
-        fprintf(stderr, "createKeyTable: can't open EXE file %s\n",
+        LOG_F(INFO, "createKeyTable: can't open EXE file %s",
 		(const char*) key_exe);
         return;
     }
@@ -953,9 +953,9 @@ void ScriptParser::TextBuffer_dumpstate(int num)
 
 void ScriptParser::TextBuffer::dumpstate(int n, int lang)
 {
-    if (n >= 0) printf(" %d:", n);
-    printf("%d ", lang);
-    printf("%3d [", contents.length());
+    if (n >= 0) LOG_F(INFO, " %d:", n);
+    LOG_F(INFO, "%d ", lang);
+    LOG_F(INFO, "%3d [", contents.length());
     print_escaped(contents);
     puts("]");
 }

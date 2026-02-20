@@ -21,6 +21,7 @@
 
 #include "BaseReader.h"
 #include "DirPaths.h"
+#include <loguru.hpp>
 
 DirPaths::DirPaths()
 {
@@ -63,7 +64,7 @@ void DirPaths::add( const pstring& new_paths )
     pstring paths_tmp = new_paths;
     char *ptr1, *ptr2;
     ptr1 = ptr2 = paths_tmp.mutable_data();
-    fprintf(stderr, "Adding: %s\n", ptr1);
+    LOG_F(INFO, "Adding: %s", ptr1);
 
     do {
         while ((*ptr2 != '\0') && (*ptr2 != PATH_DELIMITER)) ptr2++;

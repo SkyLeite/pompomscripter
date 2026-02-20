@@ -26,6 +26,7 @@
 #include "PonscripterLabel.h"
 #include "version.h"
 
+#include <loguru.hpp>
 #include <sys/stat.h>
 #include <sys/types.h>
 
@@ -182,7 +183,7 @@ int PonscripterLabel::trapCommand(const pstring& cmd)
     else if (e.is_label())
         trap_dist = e.as_string();
     else {
-        printf("%s: [%s] is not supported\n",
+        LOG_F(INFO, "%s: [%s] is not supported",
                (const char*) cmd,
                (const char*) e.debug_string());
     }
@@ -343,14 +344,14 @@ int PonscripterLabel::tablegotoCommand(const pstring& cmd)
         pstring buf = script_h.readStrValue();
         if (count++ == no) {
 	    if (cmd == "debugtablegoto")
-		fprintf(stderr, "tablegoto %d -> %s\n", no, (const char*) buf);
+		LOG_F(INFO, "tablegoto %d -> %s", no, (const char*) buf);
 	    setCurrentLabel(buf);
 	    count = -1;
 	    break;
 	}
     }
     if (count > 0 && cmd == "debugtablegoto")
-	fprintf(stderr, "tablegoto %d -> FAIL\n", no);
+	LOG_F(INFO, "tablegoto %d -> FAIL", no);
     return RET_CONTINUE;
 }
 
@@ -638,7 +639,7 @@ int tryToLaunch(const char* command, const char* target)
     pid_t child = vfork();
     if (child == -1) {
 	// Parent, failed
-	fprintf(stderr, "Could not open `%s': fork error: %s\n",
+	LOG_F(INFO, "Could not open `%s': fork error: %s",
 		target, strerror(errno));
 	return 0;
     }
@@ -699,7 +700,7 @@ int PonscripterLabel::shellCommand(const pstring& cmd)
         return RET_CONTINUE;
 
     case 2: // File not found
-        fprintf(stderr, "Failed to open %s: xdg-error reports that it doesn't "
+        LOG_F(INFO, "Failed to open %s: xdg-error reports that it doesn't "
                 "exist\n", (const char*)url);
         return RET_CONTINUE;
 
@@ -712,7 +713,7 @@ int PonscripterLabel::shellCommand(const pstring& cmd)
     case 4:   // Action failed
     case -1:  // child didn't exit normally
     default:  // unknown problem
-        fprintf(stderr, "Open URL with xdg-open failed with status %d\n",
+        LOG_F(INFO, "Open URL with xdg-open failed with status %d",
                 status);
     }
 
@@ -721,7 +722,7 @@ int PonscripterLabel::shellCommand(const pstring& cmd)
     if (browser.length() > 0) {
         pstring cmd = "\""  + browser + "\" '" + url + "' &";
         if (system((const char*)cmd) != 0)
-            fprintf(stderr, "Couldn't launch web browser `%s': check your "
+            LOG_F(INFO, "Couldn't launch web browser `%s': check your "
                     "BROWSER setting.\n", (const char*)browser);
     }
     else {
@@ -730,7 +731,7 @@ int PonscripterLabel::shellCommand(const pstring& cmd)
     }
     
 #else
-    fprintf(stderr, "[shell] command not supported for this OS\n");
+    LOG_F(INFO, "[shell] command not supported for this OS");
 #endif
 
     return RET_CONTINUE;
@@ -900,7 +901,7 @@ int PonscripterLabel::setdefaultspeedCommand(const pstring& cmd)
 
     if (new_text_speed_no < 0 || new_text_speed_no > 2) {
         new_text_speed_no = 1;
-        printf("Invalid setdefaultspeed given\n");
+        LOG_F(INFO, "Invalid setdefaultspeed given");
     }
 
     text_speed_no = new_text_speed_no;
@@ -1095,14 +1096,14 @@ int PonscripterLabel::savescreenshotCommand(const pstring& cmd)
                  );
         }
         if (screenshot_surface == NULL) {
-            printf("savescreenshot: no screenshot buffer, creating a blank 1x1 surface.\n");
+            LOG_F(INFO, "savescreenshot: no screenshot buffer, creating a blank 1x1 surface.");
             screenshot_surface = SDL_CreateRGBSurface(0, 1, 1, 32, 0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
         }
 
         SDL_SaveBMP(screenshot_surface, filename);
     }
     else
-        printf("%s: %s files are not supported.\n",
+        LOG_F(INFO, "%s: %s files are not supported.",
 	       (const char*) cmd, (const char*) ext);
 
     return RET_CONTINUE;
@@ -1362,7 +1363,7 @@ int PonscripterLabel::playCommand(const pstring& cmd)
 {
     pstring buf = script_h.readStrValue();
     if (buf[0] == '*') {
-	   fprintf(stderr, "playing cd tracks is no longer supported [%s]\n", (const char*) buf);
+	   LOG_F(INFO, "playing cd tracks is no longer supported [%s]", (const char*) buf);
     }
     else { // play MIDI
         stopBGM(false);
@@ -1371,7 +1372,7 @@ int PonscripterLabel::playCommand(const pstring& cmd)
         midi_play_loop_flag = cmd != "playonce";
         if (playSound(midi_file_name, SOUND_MIDI,
 		      midi_play_loop_flag) != SOUND_MIDI)
-            fprintf(stderr, "can't play MIDI file %s\n",
+            LOG_F(INFO, "can't play MIDI file %s",
 		    (const char*) midi_file_name);
     }
 
@@ -1381,7 +1382,7 @@ int PonscripterLabel::playCommand(const pstring& cmd)
 
 int PonscripterLabel::ofscopyCommand(const pstring& cmd)
 {
-    fprintf(stderr, "Non-upgraded command, help\n");
+    LOG_F(INFO, "Non-upgraded command, help");
 
     return RET_CONTINUE;
 }
@@ -1525,7 +1526,7 @@ SubtitleDefs PonscripterLabel::parseSubtitles(pstring file)
                                        (const char*)e[2].trim() : "#FFFFFF");
                 defs.define(e[0], col, e[1], alpha);
             }
-            else fprintf(stderr, "Bad line in subtitle file: %s\n",
+            else LOG_F(INFO, "Bad line in subtitle file: %s",
                          (const char*) *it);
         }
         else {
@@ -1534,7 +1535,7 @@ SubtitleDefs PonscripterLabel::parseSubtitles(pstring file)
                 defs.add(e[2], e[0], e[3].ltrim());
                 defs.add(e[2], e[1], "");
             }
-            else fprintf(stderr, "Bad line in subtitle file: %s\n",
+            else LOG_F(INFO, "Bad line in subtitle file: %s",
                          (const char*) *it);
         }
     }
@@ -1683,7 +1684,7 @@ int PonscripterLabel::menu_windowCommand(const pstring& cmd)
         //    flushDirect(rect, refreshMode());
         //}
       if(SDL_SetWindowFullscreen(screen, 0) < 0) {
-        fprintf(stderr, "Error setting fullscreen\n");
+        LOG_F(INFO, "Error setting fullscreen");
       }
       SDL_Rect rect = { 0, 0, screen_width, screen_height };
       flushDirect(rect, refreshMode());
@@ -1708,7 +1709,7 @@ int PonscripterLabel::menu_fullCommand(const pstring& cmd)
         //    flushDirect(rect, refreshMode());
         //}
         if(SDL_SetWindowFullscreen(screen, SDL_WINDOW_FULLSCREEN_DESKTOP) < 0) {
-          fprintf(stderr, "Error setting fullscreen\n");
+          LOG_F(INFO, "Error setting fullscreen");
         } else {
           SDL_Rect rect = { 0, 0, screen_width, screen_height };
           flushDirect(rect, refreshMode());
@@ -1724,7 +1725,7 @@ int PonscripterLabel::menu_fullCommand(const pstring& cmd)
 int PonscripterLabel::menu_automodeCommand(const pstring& cmd)
 {
     setAutoMode(true);
-    printf("menu_automode: change to automode\n");
+    LOG_F(INFO, "menu_automode: change to automode");
 
     return RET_CONTINUE;
 }
@@ -2128,7 +2129,7 @@ int PonscripterLabel::inputCommand(const pstring& cmd)
     script_h.readStrValue(); // description
 
     e.mutate(script_h.readStrValue());
-    printf("%s: %s is set to the default value, %s\n", (const char*) cmd,
+    LOG_F(INFO, "%s: %s is set to the default value, %s", (const char*) cmd,
            (const char*) e.debug_string(), (const char*) e.as_string());
 
     script_h.readIntValue(); // maxlen
@@ -2147,7 +2148,7 @@ int PonscripterLabel::inputCommand(const pstring& cmd)
 int PonscripterLabel::indentCommand(const pstring& cmd)
 {
     indent_offset = script_h.readIntValue();
-    fprintf(stderr, " warning: [indent] command is broken\n");
+    LOG_F(INFO, " warning: [indent] command is broken");
     return RET_CONTINUE;
 }
 
@@ -2230,7 +2231,7 @@ int PonscripterLabel::gettagCommand(const pstring& cmd)
     const char* buf = nest_infos.back().next_script;
     while (*buf == ' ' || *buf == '\t') buf++;
     int bytes;
-    if (zenkakko_flag && file_encoding->DecodeChar(buf, bytes) == 0x3010 /*y */)
+    if (zenkakko_flag && file_encoding->DecodeChar(buf, bytes) == 0x3010 /*ï¿½y */)
         buf += bytes;
     else if (*buf == '[')
         buf++;
@@ -2251,9 +2252,9 @@ int PonscripterLabel::gettagCommand(const pstring& cmd)
 	    int bytes = 1;
 	    while (*buf != '/' &&
 		   ((zenkakko_flag &&
-		     (file_encoding->DecodeChar(buf, bytes) != 0x3011 /* z*/)) ||
+		     (file_encoding->DecodeChar(buf, bytes) != 0x3011 /* ï¿½z*/)) ||
 		    (!zenkakko_flag &&
-             (file_encoding->DecodeChar(buf, bytes) != ']' /* z*/))))
+             (file_encoding->DecodeChar(buf, bytes) != ']' /* ï¿½z*/))))
 		buf += bytes;
 	    e.mutate(pstring(buf_start, buf - buf_start));
 	}
@@ -2264,7 +2265,7 @@ int PonscripterLabel::gettagCommand(const pstring& cmd)
     }
     while (more_args);
 
-    if (zenkakko_flag && file_encoding->DecodeChar(buf, bytes) == 0x3010 /*y */)
+    if (zenkakko_flag && file_encoding->DecodeChar(buf, bytes) == 0x3010 /*ï¿½y */)
 	buf += bytes;
     else if (*buf == ']') buf++;
 
@@ -2380,7 +2381,7 @@ int PonscripterLabel::getregCommand(const pstring& cmd)
     FILE* fp;
     if ((fp = fopen(registry_file, "r")) == NULL &&
 	(fp = fopen(archive_path.get_path(0) + registry_file, "r")) == NULL) {
-        fprintf(stderr, "Cannot open file [%s]\n",
+        LOG_F(INFO, "Cannot open file [%s]",
 		(const char*) registry_file);
         return RET_CONTINUE;
     }
@@ -2414,7 +2415,7 @@ int PonscripterLabel::getregCommand(const pstring& cmd)
 	    }
 	}
     }
-    fprintf(stderr, "Registry key %s\\%s not found.\n",
+    LOG_F(INFO, "Registry key %s\\%s not found.",
 	    (const char*) path, (const char*) key);
     fclose(fp);
     return RET_CONTINUE;
@@ -2597,7 +2598,7 @@ int PonscripterLabel::exec_dllCommand(const pstring& cmd)
     FILE* fp;
     if ((fp = fopen(dll_file, "r")) == NULL &&
 	(fp = fopen(archive_path.get_path(0) + dll_file, "r")) == NULL) {
-        fprintf(stderr, "Cannot open file [%s]\n", (const char*) dll_file);
+        LOG_F(INFO, "Cannot open file [%s]", (const char*) dll_file);
         return RET_CONTINUE;
     }
 
@@ -2635,7 +2636,7 @@ int PonscripterLabel::exec_dllCommand(const pstring& cmd)
 	    return RET_CONTINUE;
 	}
     }
-    fprintf(stderr, "The DLL is not found in %s.\n", (const char*) dll_file);
+    LOG_F(INFO, "The DLL is not found in %s.", (const char*) dll_file);
     fclose(fp);
     return RET_CONTINUE;
 }
@@ -3282,7 +3283,7 @@ int PonscripterLabel::btndefCommand(const pstring& cmd)
 	    }
 	    else {
 		btntime_value = 0; //Mion - clear the btn wait time
-		fprintf(stderr, "Could not create button: %s not found\n",
+		LOG_F(INFO, "Could not create button: %s not found",
 			(const char*) e.as_string());
 	    }
         }
@@ -3373,7 +3374,7 @@ int PonscripterLabel::brCommand(const pstring& cmd)
 
 int PonscripterLabel::bltCommand(const pstring& cmd)
 {
-  fprintf(stderr, "bltCommand used, but not updated to SDL2 properly\n");
+  LOG_F(INFO, "bltCommand used, but not updated to SDL2 properly");
     int dx, dy, dw, dh;
     int sx, sy, sw, sh;
     int multiplier = 2;
@@ -3614,7 +3615,7 @@ int PonscripterLabel::bidirectCommand(const pstring& cmd)
 
 int PonscripterLabel::bgcopyCommand(const pstring& cmd)
 {
-    fprintf(stderr, "Likely partially-updated command used bgcopyCommand\n");
+    LOG_F(INFO, "Likely partially-updated command used bgcopyCommand");
 
     bg_info.num_of_cells = 1;
     bg_info.trans_mode = AnimationInfo::TRANS_COPY;
@@ -3806,13 +3807,13 @@ int PonscripterLabel::steamsetachieveCommand(const pstring& cmd) {
 #ifdef STEAM
     if(SteamUserStats()) {
       if(!SteamUserStats()->SetAchievement(name)) {
-        fprintf(stderr, "Error setting achievement %s\n", name.data);
+        LOG_F(INFO, "Error setting achievement %s", name.data);
       } else {
         // Trigger the little "Achievement Get" dialog
         SteamUserStats()->StoreStats();
       }
     } else {
-      fprintf(stderr, "Not setting achivement, no steam\n");
+      LOG_F(INFO, "Not setting achivement, no steam");
     }
 #endif
     return RET_CONTINUE;

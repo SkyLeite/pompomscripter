@@ -12,7 +12,7 @@ void Debug::Init(PonscripterLabel* ons) {
 
 Debug* Debug::Instance() {
     if (instance_ == nullptr) {
-        fprintf(stderr, "ERROR!!\n");
+        LOG_F(INFO, "ERROR!!");
     }
 
     fflush(stderr);

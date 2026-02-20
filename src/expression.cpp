@@ -1,4 +1,5 @@
 #include "ScriptHandler.h"
+#include <loguru.hpp>
 
 pstring typestr(Expression::type_t t, bool v = false)
 {
@@ -16,7 +17,7 @@ pstring typestr(Expression::type_t t, bool v = false)
 void Expression::die(const char* why) const
 {
     int line = h.getLineByAddress(h.getCurrent(), true);
-    fprintf(stderr, "Parse error at line %d: %s\n", line, why);
+    LOG_F(INFO, "Parse error at line %d: %s", line, why);
     exit(-1);
 }
 
@@ -199,7 +200,7 @@ Expression& Expression::operator=(const Expression& src)
 {
     if (&src == this) return *this;
     if (&src.h != &h)
-	fprintf(stderr, "Warning: we have more than one ScriptHandler...\n");
+	LOG_F(WARNING, "Warning: we have more than one ScriptHandler...");
     type_ = src.type_;
     var_ = src.var_;
     index_ = src.index_;

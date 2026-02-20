@@ -25,6 +25,7 @@
 
 #include "NsaReader.h"
 #include <string.h>
+#include <loguru.hpp>
 
 NsaReader::NsaReader(DirPaths *path, const unsigned char* key_table)
     : SarReader(path, key_table),
@@ -81,7 +82,7 @@ int NsaReader::open(const pstring& nsa_path, int archive_type)
 
     if (i < 0) {
         // didn't find any (main) archive files
-        fprintf(stderr, "can't open archive file %s\n", (const char*) archive_name);
+        LOG_F(INFO, "can't open archive file %s", (const char*) archive_name);
         return -1;
     } else {
         num_of_nsa_archives = i+1;
@@ -185,7 +186,7 @@ NsaReader::FileInfo NsaReader::getFileByIndex(unsigned int index)
         index -= archive_info2[i].num_of_files;
     }
 
-    fprintf(stderr, "NsaReader::getFileByIndex  Index %d is out of range\n", index);
+    LOG_F(INFO, "NsaReader::getFileByIndex  Index %d is out of range", index);
 
     return archive_info.fi_list[0];
 }
