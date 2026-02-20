@@ -261,7 +261,7 @@ void PonscripterLabel::setupAnimationInfo(AnimationInfo* anim, Fontinfo* info)
         if (anim->trans_mode == AnimationInfo::TRANS_MASK)
             surface_m = loadImage( anim->mask_file_name, NULL, anim->twox, anim->isflipped);
 
-        anim->setupImage(surface, surface_m, has_alpha);
+        anim->setupImage(surface, surface_m, has_alpha, renderer);
         if (surface)   SDL_FreeSurface(surface);
         if (surface_m) SDL_FreeSurface(surface_m);
     }

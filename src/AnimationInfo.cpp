@@ -33,6 +33,16 @@
 #include "graphics_common.h"
 
 #include "graphics_accelerated.h"
+#include "Dbg.h"
+
+#if defined(USE_X86_GFX)
+#include "graphics_mmx.h"
+#include "graphics_sse2.h"
+#endif
+
+#if defined(USE_PPC_GFX)
+#include "graphics_altivec.h"
+#endif
 
 #include <math.h>
 #ifndef M_PI
@@ -174,7 +184,9 @@ void AnimationInfo::reset()
 void AnimationInfo::deleteImage()
 {
     if (!is_copy && image_surface) SDL_FreeSurface(image_surface);
+    if (!is_copy && image_texture) SDL_DestroyTexture(image_texture);
     image_surface = NULL;
+    image_texture = NULL;
 #ifdef BPP16
     if (!is_copy && alpha_buf) delete[] alpha_buf;
     alpha_buf = NULL;
@@ -871,7 +883,7 @@ void AnimationInfo::fill(Uint8 r, Uint8 g, Uint8 b, Uint8 a)
 
 
 void AnimationInfo::setupImage( SDL_Surface *surface, SDL_Surface *surface_m,
-                                bool has_alpha, int ratio1, int ratio2 )
+                                bool has_alpha, SDL_Renderer* renderer )
 {
     if (surface == NULL) return;
 
@@ -1011,38 +1023,13 @@ void AnimationInfo::setupImage( SDL_Surface *surface, SDL_Surface *surface_m,
 
     SDL_UnlockSurface( surface );
 
-    if (ratio1 != ratio2) {
-        SDL_Surface *src_s = tmp;
-
-        w = ((src_s->w / num_of_cells) * ratio1 / ratio2) * num_of_cells;
-        if (w >= 16384){
-            //too wide for SDL_Surface pitch (Uint16) at 4bpp; size differently
-            fprintf(stderr, " *** image '%s' is too wide to resize to (%d,%d); ",
-                    (const char *)file_name, w, src_s->h * ratio1 / ratio2);
-            int ratio3 = 16384 * ratio2 / src_s->w;
-            w = ((src_s->w / num_of_cells) * ratio3 / ratio2) * num_of_cells;
-            h = src_s->h * ratio3 / ratio2;
-            if ( h == 0 ) h = 1;
-            fprintf(stderr, "resizing to (%d,%d) instead *** \n", w, h);
-        }else{
-            if ( w == 0 ) w = num_of_cells;
-            h = src_s->h * ratio1 / ratio2;
-            if ( h == 0 ) h = 1;
-        }
-#ifdef BPP16
-        tmp = SDL_CreateRGBSurface( SDL_SWSURFACE, w, h,
-                                    fmt->BitsPerPixel, fmt->Rmask,
-                                    fmt->Gmask, fmt->Bmask, fmt->Amask);
-#else
-        image_surface = NULL;
-        allocImage(w, h);
-        tmp = image_surface;
-#endif
-        resizeSurface( src_s, tmp, num_of_cells );
-        SDL_FreeSurface( src_s );
+    image_texture = SDL_CreateTextureFromSurface(renderer, image_surface);
+    if (image_texture == NULL) {
+        fprintf(stderr, "Error creating texture: %s", SDL_GetError());
     }
+
 #ifdef BPP16
-    allocImage(w, h);
+        allocImage(w, h);
     ONSBuf *img_buffer = (ONSBuf *)image_surface->pixels;
     alphap = alpha_buf;
     buffer = (Uint32 *)tmp->pixels;

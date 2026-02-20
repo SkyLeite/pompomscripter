@@ -26,6 +26,7 @@
 #include "PonscripterLabel.h"
 #include <sys/stat.h>
 #include "version.h"
+#include "Dbg.h"
 
 #include <cstdio>
 
@@ -366,8 +367,11 @@ extern "C" int main(int argc, char** argv)
 int main(int argc, char** argv)
 #endif
 {
+    Debug debug;
     PonscripterLabel ons;
+    debug.Init(&ons);
     pstring preferred_script = "";
+
 
 #ifdef PSP
     ons.disableRescale();

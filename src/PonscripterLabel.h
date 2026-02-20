@@ -93,6 +93,8 @@ public:
 };
 
 class PonscripterLabel : public ScriptParser {
+    friend class Debug;
+
 public:
     typedef AnimationInfo::ONSBuf ONSBuf;
 

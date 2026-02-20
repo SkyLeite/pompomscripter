@@ -119,6 +119,7 @@ public:
     int  trans;
     pstring image_name;
     SDL_Surface*   image_surface;
+    SDL_Texture*   image_texture;
 #ifdef BPP16
     unsigned char* alpha_buf;
 #endif
@@ -212,7 +213,17 @@ public:
     void fill(Uint8 r, Uint8 g, Uint8 b, Uint8 a);
     void fill(rgb_t rgb, Uint8 a) { fill(rgb.r, rgb.g, rgb.b, a); }
     void setupImage(SDL_Surface* surface, SDL_Surface* surface_m,
-                    bool has_alpha, int ratio1=1, int ratio2=1);
+                    bool has_alpha, SDL_Renderer* renderer);
+    static void setCpufuncs(unsigned int func);
+    static unsigned int getCpufuncs();
+    static void imageFilterMean(unsigned char *src1, unsigned char *src2,
+                                unsigned char *dst, int length);
+    static void imageFilterAddTo(unsigned char *dst, unsigned char *src,
+                                 int length);
+    static void imageFilterSubFrom(unsigned char *dst, unsigned char *src,
+                                   int length);
+    static void imageFilterBlend(Uint32 *dst_buffer, Uint32 *src_buffer,
+                                 Uint8 *alphap, int alpha, int length);
 
     //Mion: for resizing (moved from ONScripterLabel)
     static void resetResizeBuffer();

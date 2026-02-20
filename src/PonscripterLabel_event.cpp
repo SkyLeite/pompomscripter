@@ -30,6 +30,7 @@
 #endif
 
 #include "PonscripterUserEvents.h"
+#include "Dbg.h"
 
 #include "imgui.h"
 #include "backends/imgui_impl_sdl2.h"
@@ -1396,6 +1397,7 @@ int PonscripterLabel::eventLoop()
             // Imgui commands
             bool show_demo_window = true;
             ImGui::ShowDemoWindow(&show_demo_window);
+            Debug::Instance()->Draw();
 
             ImGui::Render();
 

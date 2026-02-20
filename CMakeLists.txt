@@ -36,10 +36,12 @@ project(POMPOM)
 add_executable(POMPOM)
 
 set_target_properties(POMPOM PROPERTIES OUTPUT_NAME pompom)
+target_compile_features(POMPOM PRIVATE cxx_std_20)
 
 # Find sources
 set(POMPOM_SOURCES
     src/AnimationInfo.cpp
+    src/Dbg.cpp
     src/DirPaths.cpp
     src/DirectReader.cpp
     src/DirtyRect.cpp
