@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.8)
 project(ponscripter)
 
+set (CMAKE_CXX_STANDARD 20)
+
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake;${CMAKE_CURRENT_SOURCE_DIR}/cmake/sdl2)
 
 option(USE_STEAM "Enable Steam Support" OFF)
