@@ -157,12 +157,12 @@ include(FetchContent)
 # Imgui
 FetchContent_Declare(imgui_external
     URL https://github.com/SkyLeite/imgui/archive/bc51d937f348cb884dfb702b7e5f7522cdda51f2.zip
-	EXCLUDE_FROM_ALL
 )
 FetchContent_MakeAvailable(imgui_external)
 
 add_library(imgui
 	${imgui_external_SOURCE_DIR}/imgui.cpp
+	${imgui_external_SOURCE_DIR}/imgui.h
 	${imgui_external_SOURCE_DIR}/imgui_demo.cpp
 	${imgui_external_SOURCE_DIR}/imgui_draw.cpp
 	${imgui_external_SOURCE_DIR}/imgui_tables.cpp
@@ -170,9 +170,8 @@ add_library(imgui
 	${imgui_external_SOURCE_DIR}/backends/imgui_impl_sdl2.cpp
 	${imgui_external_SOURCE_DIR}/backends/imgui_impl_sdlrenderer2.cpp
 )
-target_link_libraries(imgui PUBLIC SDL2::Main)
+target_link_libraries(imgui PRIVATE SDL2::Main)
 target_include_directories(imgui PUBLIC ${imgui_external_SOURCE_DIR})
-
 target_link_libraries(ponscr PUBLIC imgui)
 
 # Loguru

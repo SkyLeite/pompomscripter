@@ -1395,8 +1395,6 @@ int PonscripterLabel::eventLoop()
             ImGui::NewFrame();
 
             // Imgui commands
-            bool show_demo_window = true;
-            ImGui::ShowDemoWindow(&show_demo_window);
             Debug::Instance()->Draw();
 
             ImGui::Render();

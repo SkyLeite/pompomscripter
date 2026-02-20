@@ -6,6 +6,21 @@
 #include <source_location>
 #include <string_view>
 
+class LogMessage {
+    public:
+        LogMessage(const loguru::Message &message);
+
+        loguru::Verbosity   verbosity;   // Already part of preamble
+        std::string filename;    // Already part of preamble
+        unsigned    line;        // Already part of preamble
+        std::string preamble;    // Date, time, uptime, thread, file:line, verbosity.
+        std::string prefix;      // Assertion failure info goes here (or "").
+        std::string message;     // User message goes here.
+
+        std::string verbosity_str();
+        std::string source();
+};
+
 class Debug {
     private:
         PonscripterLabel *ons;
@@ -13,10 +28,12 @@ class Debug {
         Debug(Debug const &) = delete;
         Debug &operator=(Debug const &) = delete;
 
-        std::vector<std::string> messages;
+        std::vector<LogMessage> messages;
         bool show_console = false;
+        bool show_imgui_demo = false;
+        bool show_inspector = false;
 
-        bool show_inspector = true;
+        bool inspector_auto_scroll = true;
 
     public:
         Debug() {};
@@ -27,7 +44,7 @@ class Debug {
         void Draw();
         void DrawConsole();
         void DrawInspector();
-        void AddLog(std::string *message);
+        void AddLog(LogMessage message);
 };
 
 #endif
