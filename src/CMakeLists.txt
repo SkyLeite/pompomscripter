@@ -86,6 +86,8 @@ add_executable(ponscr
 	version.h
 	winres.h)
 
+set_property(TARGET ponscr PROPERTY CXX_STANDARD 20)
+
 target_include_directories(ponscr
 	PRIVATE
 		${CMAKE_CURRENT_SOURCE_DIR})

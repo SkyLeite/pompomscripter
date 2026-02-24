@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.8)
 project(ponscripter)
 
 set (CMAKE_CXX_STANDARD 20)
+set(CMAKE_BUILD_TYPE Debug)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake;${CMAKE_CURRENT_SOURCE_DIR}/cmake/sdl2)
 
