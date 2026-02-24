@@ -28,6 +28,7 @@
 #include "resources.h"
 #include <ctype.h>
 #include <sys/stat.h>
+#include <filesystem>
 
 #include "imgui.h"
 #include "backends/imgui_impl_sdl2.h"
@@ -691,7 +692,15 @@ void PonscripterLabel::setArchivePath(const pstring& path)
 
 void PonscripterLabel::setSavePath(const pstring& path)
 {
+    LOG_F(INFO, "Setting save path to: %s", (const char*)script_h.save_path);
+
     script_h.save_path = path + DELIMITER;
+
+    if (!std::filesystem::exists((const char*)script_h.save_path)) {
+        LOG_F(WARNING, "Save path %s doesn't exist. Creating.", (const char*)script_h.save_path);
+        auto path = std::filesystem::path((const char*)script_h.save_path);
+        std::filesystem::create_directory(path);
+    }
 }
 
 
