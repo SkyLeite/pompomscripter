@@ -185,7 +185,6 @@ void AnimationInfo::reset()
 void AnimationInfo::deleteImage()
 {
     if (!is_copy && image_surface) SDL_FreeSurface(image_surface);
-    if (!is_copy && image_texture) SDL_DestroyTexture(image_texture);
     image_surface = NULL;
     image_texture = NULL;
 #ifdef BPP16
