@@ -9,7 +9,7 @@ jobs:
       fail-fast: false
       matrix:
         steam: ["-steam", ""]
-        os: [windows-2022, macos-13, ubuntu-24.04]
+        os: [windows-2022, macos-15, macos-15-arm, ubuntu-24.04]
         isinclude: [false] # Makes include add new jobs instead of editing existing ones
         include:
           - os: ubuntu-24.04
