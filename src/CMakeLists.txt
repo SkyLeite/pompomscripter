@@ -183,4 +183,4 @@ FetchContent_Declare(LoguruGitRepo
 )
 FetchContent_MakeAvailable(LoguruGitRepo)
 
-target_link_libraries(ponscr PRIVATE loguru::loguru)
+target_link_libraries(ponscr PUBLIC loguru::loguru)
