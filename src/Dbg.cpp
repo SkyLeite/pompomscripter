@@ -149,50 +149,127 @@ std::string LogMessage::source() {
     return std::format("{}:{}", this->filename, this->line);
 }
 
-void renderAnimationImage(AnimationInfo* si) {
+void renderAnimationImage(AnimationInfo* si, int max_width = 100) {
     if (si == nullptr || si->image_texture == nullptr) {
         return;
     }
-
-    ImGui::Text("file_name: %s | image_name: %s", (const char *)si->file_name, (const char *)si->image_name);
 
     float width = (float)si->image_surface->w;
     float height = (float)si->image_surface->h;
 
     float biggest_size = std::max(width, height);
 
-    float max_width = 100;
     float scale_factor = max_width / biggest_size;
 
     ImGui::Image(si->image_texture, ImVec2(width * scale_factor, height * scale_factor));
 }
 
+void Debug::DrawImageButton(size_t i, AnimationInfo* si) {
+    auto button_sz = ImVec2(80.0, 80.0);
+
+    if (si == nullptr || si->image_texture == nullptr) {
+        return;
+    }
+
+    float width = (float)si->image_surface->w;
+    float height = (float)si->image_surface->h;
+
+    float biggest_size = std::max(width, height);
+
+    float max_width = 60;
+    float scale_factor = max_width / biggest_size;
+
+    auto button_pos = ImGui::GetCursorScreenPos();
+    ImGui::SetNextItemAllowOverlap();
+
+    ImGui::PushID((const char*)si->file_name);
+    if (ImGui::Button("", button_sz)) {
+        this->selected_animation = si;
+    }
+    ImGui::PopID();
+
+    if (ImGui::IsItemHovered() && this->inspector_enable_hover_preview) {
+        ImGui::BeginTooltip();
+        ImGui::Image(si->image_texture, ImVec2(width, height));
+        ImGui::EndTooltip();
+    }
+
+    ImGui::SetCursorScreenPos(ImVec2(button_pos.x + 9, button_pos.y + 20));
+    ImGui::Image(si->image_texture, ImVec2(width * scale_factor, height * scale_factor));
+
+    ImGui::SetCursorScreenPos(ImVec2(button_pos.x + 2, button_pos.y + 2));
+    ImGui::Text("%d", i);
+
+    ImGui::SetCursorScreenPos(ImVec2(button_pos.x, button_pos.y + button_sz.y));
+    ImGui::Dummy(ImVec2(1.0, 2.0));
+}
+
 void Debug::DrawInspector() {
     ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiCond_FirstUseEver);
 
-    if (!ImGui::Begin("Inspector", &this->show_inspector)) {
+    if (!ImGui::Begin("Inspector", &this->show_inspector, ImGuiWindowFlags_MenuBar)) {
         ImGui::End();
         return;
     }
 
-    SDL_RenderClear(this->ons->renderer);
+    if (ImGui::BeginMenuBar()) {
+        if (ImGui::BeginMenu("Options")) {
+            ImGui::MenuItem("Preview on hover", NULL, &this->inspector_enable_hover_preview);
+            ImGui::EndMenu();
+        }
+
+        ImGui::EndMenuBar();
+    }
+
+    auto style = ImGui::GetStyle();
+
+    auto content = ImGui::GetContentRegionAvail();
+    ImGui::BeginChild("Sprite1", ImVec2(110, content.y), ImGuiChildFlags_Borders, ImGuiWindowFlags_MenuBar | ImGuiWindowFlags_AlwaysVerticalScrollbar);
+
+    ImGui::BeginMenuBar();
+    ImGui::MenuItem("Images", NULL, false, false);
+    ImGui::EndMenuBar();
     for (size_t i = 0; i < MAX_SPRITE_NUM; i++)
     {
         auto si = &this->ons->sprite_info[i];
-        renderAnimationImage(si);
+        Debug::DrawImageButton(i, si);
     }
 
     for (size_t i = 0; i < MAX_SPRITE2_NUM; i++)
     {
         auto si = &this->ons->sprite2_info[i];
-        renderAnimationImage(si);
+        Debug::DrawImageButton(i, si);
     }
 
     for (size_t i = 0; i < 3; i++)
     {
         auto si = &this->ons->tachi_info[i];
-        renderAnimationImage(si);
+        Debug::DrawImageButton(i, si);
     }
+
+    ImGui::EndChild();
+
+    ImGui::SameLine();
+    ImGui::BeginChild("SelectedImage", ImVec2(0.0f, 0.0f), ImGuiChildFlags_Borders, ImGuiWindowFlags_MenuBar);
+
+    ImGui::BeginMenuBar();
+    ImGui::MenuItem("Details", NULL, false, false);
+    ImGui::EndMenuBar();
+
+    if (this->selected_animation != nullptr) {
+        auto si = this->selected_animation;
+        ImGui::Text("Image name: %s", (const char*)si->image_name);
+        ImGui::Text("File name: %s", (const char*)si->file_name);
+        ImGui::Text("Mask file name: %s", (const char*)si->mask_file_name);
+        ImGui::Text("Size: %d x %d", si->pos.w, si->pos.h);
+        ImGui::Text("Position: %d x %d", si->pos.x, si->pos.y);
+        ImGui::Text("Blending mode: %d", si->blending_mode);
+        ImGui::Text("Color: R%dG%dB%d", si->color.r, si->color.g, si->color.b);
+        ImGui::Text("Direction: %d", si->direction);
+        ImGui::Text("Enable mode: %d", si->enablemode);
+        renderAnimationImage(si, 500);
+    }
+    ImGui::EndChild();
 
     ImGui::End();
 }

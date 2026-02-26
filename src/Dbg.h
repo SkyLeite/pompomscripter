@@ -31,9 +31,11 @@ class Debug {
         std::vector<LogMessage> messages;
         bool show_console = false;
         bool show_imgui_demo = false;
-        bool show_inspector = false;
+        bool show_inspector = true;
 
+        AnimationInfo* selected_animation = nullptr;
         bool inspector_auto_scroll = true;
+        bool inspector_enable_hover_preview = false;
 
     public:
         Debug() {};
@@ -44,6 +46,8 @@ class Debug {
         void Draw();
         void DrawConsole();
         void DrawInspector();
+        void DrawImageButton(size_t i, AnimationInfo *si);
+
         void AddLog(LogMessage message);
 };
 
