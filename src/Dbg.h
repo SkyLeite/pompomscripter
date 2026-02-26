@@ -36,6 +36,7 @@ class Debug {
         AnimationInfo* selected_animation = nullptr;
         bool inspector_auto_scroll = true;
         bool inspector_enable_hover_preview = false;
+        bool inspector_enable_image_finder = true;
 
     public:
         Debug() {};

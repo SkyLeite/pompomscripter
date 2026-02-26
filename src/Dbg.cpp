@@ -215,6 +215,7 @@ void Debug::DrawInspector() {
     if (ImGui::BeginMenuBar()) {
         if (ImGui::BeginMenu("Options")) {
             ImGui::MenuItem("Preview on hover", NULL, &this->inspector_enable_hover_preview);
+            ImGui::MenuItem("Highlight selected image", NULL, &this->inspector_enable_image_finder);
             ImGui::EndMenu();
         }
 
@@ -270,6 +271,16 @@ void Debug::DrawInspector() {
         renderAnimationImage(si, 500);
     }
     ImGui::EndChild();
+
+    // Draw image finder
+    if (this->selected_animation && this->inspector_enable_image_finder) {
+        auto si = this->selected_animation;
+
+        auto draw_list = ImGui::GetBackgroundDrawList();
+        auto upper_left = ImVec2(si->pos.x, si->pos.y);
+        auto lower_right = ImVec2(upper_left.x + si->pos.w, upper_left.y + si->pos.h);
+        draw_list->AddRect(upper_left, lower_right, IM_COL32(0, 255, 0, 255));
+    }
 
     ImGui::End();
 }
