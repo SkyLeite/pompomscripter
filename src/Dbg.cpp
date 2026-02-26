@@ -190,7 +190,9 @@ void Debug::DrawImageButton(size_t i, AnimationInfo* si) {
 
     if (ImGui::IsItemHovered() && this->inspector_enable_hover_preview) {
         ImGui::BeginTooltip();
+        ImGui::PushID(std::format("{}:{}", (const char*)si->file_name, i).c_str());
         ImGui::Image(si->image_texture, ImVec2(width, height));
+        ImGui::PopID();
         ImGui::EndTooltip();
     }
 
@@ -233,19 +235,25 @@ void Debug::DrawInspector() {
     for (size_t i = 0; i < MAX_SPRITE_NUM; i++)
     {
         auto si = &this->ons->sprite_info[i];
+        ImGui::PushID(std::format("sprite1_{}",i).c_str());
         Debug::DrawImageButton(i, si);
+        ImGui::PopID();
     }
 
     for (size_t i = 0; i < MAX_SPRITE2_NUM; i++)
     {
         auto si = &this->ons->sprite2_info[i];
+        ImGui::PushID(std::format("sprite2_{}",i).c_str());
         Debug::DrawImageButton(i, si);
+        ImGui::PopID();
     }
 
     for (size_t i = 0; i < 3; i++)
     {
         auto si = &this->ons->tachi_info[i];
+        ImGui::PushID(std::format("sprite3_{}",i).c_str());
         Debug::DrawImageButton(i, si);
+        ImGui::PopID();
     }
 
     ImGui::EndChild();
