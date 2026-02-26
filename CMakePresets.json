@@ -39,7 +39,7 @@
       }
     },
     {
-      "name": "MacOS",
+      "name": "macOS",
       "inherits": "default",
       "displayName": "MacOS configuration",
       "description": "This build is only available on MacOS",
