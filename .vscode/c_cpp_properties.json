@@ -6,7 +6,8 @@
                 "${workspaceFolder}/**"
             ],
             "defines": [
-                "USE_CPU_GFX=OFF"
+                "USE_CPU_GFX=OFF",
+                "MACOSX"
             ],
             "cStandard": "c17",
             "cppStandard": "c++20",
