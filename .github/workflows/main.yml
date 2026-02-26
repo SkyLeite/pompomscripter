@@ -22,8 +22,8 @@ jobs:
         with:
           vcpkgGitCommitId: 'ffc071e0c08432c60c9b64f00334c0227667931b'
 
-      - name: Build Project
-        uses: threeal/cmake-action@v2.1.0
+      - name: Build project
+        uses: lukka/run-cmake@v10
         with:
           configurePreset: ${{ runner.os }}
           buildPreset: 'default'
