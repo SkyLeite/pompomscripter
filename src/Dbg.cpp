@@ -198,7 +198,7 @@ void Debug::DrawImageButton(size_t i, AnimationInfo* si) {
     ImGui::Image(si->image_texture, ImVec2(width * scale_factor, height * scale_factor));
 
     ImGui::SetCursorScreenPos(ImVec2(button_pos.x + 2, button_pos.y + 2));
-    ImGui::Text("%d", i);
+    ImGui::Text("%zu", i);
 
     ImGui::SetCursorScreenPos(ImVec2(button_pos.x, button_pos.y + button_sz.y));
     ImGui::Dummy(ImVec2(1.0, 2.0));
