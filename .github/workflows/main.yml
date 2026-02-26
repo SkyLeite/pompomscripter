@@ -20,8 +20,10 @@ jobs:
       - name: Setup vcpkg
         uses: lukka/run-vcpkg@v11
         with:
-          configurePreset: ${{ runner.os }}
-          buildPreset: 'default'
+          vcpkgGitCommitId: 'ffc071e0c08432c60c9b64f00334c0227667931b'
 
       - name: Build Project
         uses: threeal/cmake-action@v2.1.0
+        with:
+          configurePreset: ${{ runner.os }}
+          buildPreset: 'default'
