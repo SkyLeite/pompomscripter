@@ -1254,6 +1254,7 @@ int PonscripterLabel::eventLoop()
 
     advancePhase();
 
+
     // when we're on the first of a button-waiting frame (menu, etc), we snap mouse cursor to button when
     //   using keyboard/gamecontroller to vastly improve the experience when using not using a mouse directly
     bool using_buttonbased_movement = true;  // true to snap to main menu when it loads
@@ -1261,6 +1262,8 @@ int PonscripterLabel::eventLoop()
     SDL_GetMouseState(&last_mouse_x, &last_mouse_y);
 
     while (SDL_WaitEvent(&event)) {
+        auto io = ImGui::GetIO();
+
         ImGui_ImplSDL2_ProcessEvent(&event);
 
         // ignore continous SDL_MOUSEMOTION
@@ -1283,21 +1286,34 @@ int PonscripterLabel::eventLoop()
 
         switch (event.type) {
         case SDL_MOUSEMOTION:
-            mouseMoveEvent((SDL_MouseMotionEvent*) &event);
+            if (!io.WantCaptureMouse) {
+                mouseMoveEvent((SDL_MouseMotionEvent*) &event);
+            }
+
             break;
 
         case SDL_MOUSEBUTTONDOWN:
-            current_button_state.down_x = ( (SDL_MouseButtonEvent *) &event)->x;
-            current_button_state.down_y = ( (SDL_MouseButtonEvent *) &event)->y;
-            current_button_state.ignore_mouseup = false;
-            if (!btndown_flag) break;
+            if (!io.WantCaptureMouse) {
+                current_button_state.down_x = ( (SDL_MouseButtonEvent *) &event)->x;
+                current_button_state.down_y = ( (SDL_MouseButtonEvent *) &event)->y;
+                current_button_state.ignore_mouseup = false;
+                if (!btndown_flag) break;
+            }
+
+            break;
 
         case SDL_MOUSEBUTTONUP:
-            mousePressEvent((SDL_MouseButtonEvent*) &event);
+            if (!io.WantCaptureMouse) {
+                mousePressEvent((SDL_MouseButtonEvent*) &event);
+            }
+
             break;
 
         case SDL_MOUSEWHEEL:
-            mouseWheelEvent(&event.wheel);
+            if (!io.WantCaptureMouse) {
+                mouseWheelEvent(&event.wheel);
+            }
+
             break;
 
         // NOTE: we reverse KEYUP and KEYDOWN for controller presses, because otherwise it feels really slow and junky
@@ -1341,13 +1357,15 @@ int PonscripterLabel::eventLoop()
                 break;
 
         case SDL_KEYDOWN:
-            if ((event.key.keysym.sym == SDLK_UP) || (event.key.keysym.sym == SDLK_DOWN) ||
-                (event.key.keysym.sym == SDLK_LEFT) || (event.key.keysym.sym == SDLK_RIGHT))
-                using_buttonbased_movement = true;
-            event.key.keysym.sym = transKey(event.key.keysym.sym);
-            keyDownEvent((SDL_KeyboardEvent*) &event);
-            if (btndown_flag)
-                keyPressEvent((SDL_KeyboardEvent*) &event);
+            if (!io.WantCaptureKeyboard) {
+                if ((event.key.keysym.sym == SDLK_UP) || (event.key.keysym.sym == SDLK_DOWN) ||
+                    (event.key.keysym.sym == SDLK_LEFT) || (event.key.keysym.sym == SDLK_RIGHT))
+                    using_buttonbased_movement = true;
+                event.key.keysym.sym = transKey(event.key.keysym.sym);
+                keyDownEvent((SDL_KeyboardEvent*) &event);
+                if (btndown_flag)
+                    keyPressEvent((SDL_KeyboardEvent*) &event);
+            }
 
             break;
 
@@ -1359,9 +1377,12 @@ int PonscripterLabel::eventLoop()
                 break;
 
         case SDL_KEYUP:
-            event.key.keysym.sym = transKey(event.key.keysym.sym);
-            keyUpEvent((SDL_KeyboardEvent*) &event);
-            keyPressEvent((SDL_KeyboardEvent*) &event);
+            if (!io.WantCaptureKeyboard) {
+                event.key.keysym.sym = transKey(event.key.keysym.sym);
+                keyUpEvent((SDL_KeyboardEvent*) &event);
+                keyPressEvent((SDL_KeyboardEvent*) &event);
+            }
+
             break;
 
         case SDL_JOYAXISMOTION:
