@@ -1,0 +1,17 @@
+arguments: C:\\Users\\Sky\\Projects\\pompomscripter\\build\\src\\Debug\\ponscr.exe
+Current dir: C:\Users\Sky\Projects\pompomscripter
+File verbosity level: 0
+date       time         ( uptime  ) [ thread name/id ]                   file:line     v| 
+2026-03-18 17:36:25.463 (   0.001s) [main thread     ]             loguru.cpp:841   INFO| Logging to 'latest_readable.log', mode: 'w', verbosity: 0
+2026-03-18 17:36:25.465 (   0.003s) [main thread     ]        Ponscripter.cpp:377   INFO| Initializing debug
+2026-03-18 17:36:25.465 (   0.004s) [main thread     ]        Ponscripter.cpp:419   INFO| Initializing onscripter
+2026-03-18 17:36:25.466 (   0.004s) [main thread     ]   PonscripterLabel.cpp:1150  INFO| Initializing ponscr
+2026-03-18 17:36:25.466 (   0.004s) [main thread     ]   PonscripterLabel.cpp:1162  INFO| Get num paths
+2026-03-18 17:36:25.466 (   0.004s) [main thread     ]   PonscripterLabel.cpp:1197  INFO| Adding patch
+2026-03-18 17:36:25.466 (   0.004s) [main thread     ]           DirPaths.cpp:67    INFO| Adding: ./patch
+2026-03-18 17:36:25.466 (   0.004s) [main thread     ]   PonscripterLabel.cpp:1200  INFO| Adding .
+2026-03-18 17:36:25.466 (   0.004s) [main thread     ]           DirPaths.cpp:67    INFO| Adding: .
+2026-03-18 17:36:25.466 (   0.004s) [main thread     ]   PonscripterLabel.cpp:1203  INFO| Adding ..
+2026-03-18 17:36:25.466 (   0.005s) [main thread     ]           DirPaths.cpp:67    INFO| Adding: ..
+2026-03-18 17:36:26.936 (   1.474s) [main thread     ]        Ponscripter.cpp:421   INFO| Failed to initialize
+2026-03-18 17:36:26.936 (   1.474s) [main thread     ]             loguru.cpp:538   INFO| atexit

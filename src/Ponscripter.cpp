@@ -25,6 +25,7 @@
 
 #include "PonscripterLabel.h"
 #include <sys/stat.h>
+#include <filesystem>
 #include "version.h"
 #include "Dbg.h"
 
@@ -244,8 +245,7 @@ static void parseOptions(int argc, char **argv, PonscripterLabel &ons,
                 // the archive path; otherwise assume it must be a
                 // script filename.
                 struct stat info;
-                if (stat(path, &info) == -1 ||
-                    !S_ISDIR(info.st_mode))
+                if (stat(path, &info) == -1 || !std::filesystem::is_directory((std::string) path))
                 {
                     if (i >= 0) {
                         file = path.midstr(i + 1, path.length() - i);
@@ -373,6 +373,8 @@ int main(int argc, char** argv)
 
     Debug debug;
     PonscripterLabel ons;
+
+    LOG_F(INFO, "Initializing debug");
     debug.Init(&ons);
     pstring preferred_script = "";
 
@@ -414,8 +416,13 @@ int main(int argc, char** argv)
     const char* s = preferred_script;
     if (*s == 0) s = NULL;
 
-    if (ons.init(s)) exit(-1);
+    LOG_F(INFO, "Initializing onscripter");
+    if (ons.init(s)) { 
+        LOG_F(INFO, "Failed to initialize");
+        exit(-1);
+    }
 
+    LOG_F(INFO, "Starting event loop");
     ons.eventLoop();
 
     exit(0);

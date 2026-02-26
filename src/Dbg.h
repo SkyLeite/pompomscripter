@@ -31,7 +31,7 @@ class Debug {
         std::vector<LogMessage> messages;
         bool show_console = false;
         bool show_imgui_demo = false;
-        bool show_inspector = true;
+        bool show_inspector = false;
 
         AnimationInfo* selected_animation = nullptr;
         bool inspector_auto_scroll = true;
