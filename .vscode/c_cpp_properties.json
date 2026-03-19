@@ -1,12 +1,26 @@
 {
     "configurations": [
         {
+            "name": "Default",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "defines": [
+                "USE_CPU_GFX=OFF",
+                "ENABLE_INSPECTOR=ON"
+            ],
+            "cStandard": "c17",
+            "cppStandard": "c++20",
+        },
+        {
             "name": "Mac",
             "includePath": [
                 "${workspaceFolder}/**"
             ],
             "defines": [
-                "USE_CPU_GFX=OFF"
+                "USE_CPU_GFX=OFF",
+                "MACOSX",
+                "ENABLE_INSPECTOR=ON"
             ],
             "cStandard": "c17",
             "cppStandard": "c++20",

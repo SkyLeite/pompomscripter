@@ -8,9 +8,15 @@
 
 Debug* Debug::instance_ = NULL;
 
+#ifdef WIN32
+static const char PATH_DELIM = '\\';
+#else
+static const char PATH_DELIM = '/';
+#endif
+
 LogMessage::LogMessage(const loguru::Message& message) {
     auto filepath = std::string(message.filename);
-    auto last_slash_idx = filepath.find_last_of('/');
+    auto last_slash_idx = filepath.find_last_of(PATH_DELIM);
     auto filename = filepath.substr(last_slash_idx, filepath.size() - 1);
 
     this->filename = filename;
@@ -43,6 +49,7 @@ Debug* Debug::Instance() {
     return instance_;
 }
 
+#ifdef ENABLE_INSPECTOR
 void Debug::Draw() {
     if (ImGui::BeginMainMenuBar()) {
         if (ImGui::BeginMenu("Windows")) {
@@ -67,6 +74,9 @@ void Debug::Draw() {
         this->DrawInspector();
     }
 }
+#else
+void Debug::Draw() {}
+#endif
 
 void Debug::DrawConsole() {
     ImGui::SetNextWindowSize(ImVec2(500, 400), ImGuiCond_FirstUseEver);

@@ -317,6 +317,7 @@ void PonscripterLabel::parseTaggedString(AnimationInfo* anim, bool is_mask)
         }
         else if (buffer[0] == 's' || buffer[0] == 'S') {
             anim->trans_mode = AnimationInfo::TRANS_STRING;
+            anim->skip_whitespace = false;
             anim->is_centered_text = buffer[0] == 'S';
             buffer++;
             anim->num_of_cells = 0;

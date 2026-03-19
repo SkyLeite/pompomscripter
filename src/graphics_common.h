@@ -73,7 +73,11 @@
 #ifdef __clang__
 # define HELPER_FN inline __attribute__((always_inline, artificial))
 #else
+#ifdef _MSC_VER
+# define HELPER_FN inline __forceinline
+#else
 # define HELPER_FN inline __attribute__((always_inline))
+#endif
 #endif
 
 static HELPER_FN bool is_aligned(const void* ptr, size_t alignment) {

@@ -33,6 +33,7 @@
 
 #ifdef WIN32
 //Mion: support for non-ASCII (SJIS) filenames
+#include <windows.h>
 #include <wchar.h>
 #endif
 

@@ -8,7 +8,7 @@ add_custom_command(
 	DEPENDS embed
 )
 
-add_executable(ponscr
+set(PONSCR_SOURCES 
 	AnimationInfo.cpp
 	AnimationInfo.h
 	BaseReader.h
@@ -86,6 +86,8 @@ add_executable(ponscr
 	version.h
 	winres.h)
 
+add_executable(ponscr ${PONSCR_SOURCES})
+
 set_property(TARGET ponscr PROPERTY CXX_STANDARD 20)
 
 target_include_directories(ponscr
@@ -100,11 +102,17 @@ target_link_libraries(ponscr
 		PNG::PNG
 		Vorbis::Vorbis
 		Vorbis::VorbisFile
-		SDL2::Main
-		SDL2::Image
-		SDL2::Mixer
-		SDL2::SMPEG
+		unofficial::smpeg2::smpeg2
 		ZLIB::ZLIB)
+
+find_package(SDL2 CONFIG REQUIRED)
+target_link_libraries(ponscr
+	PRIVATE
+	$<TARGET_NAME_IF_EXISTS:SDL2::SDL2main>
+	$<IF:$<TARGET_EXISTS:SDL2::SDL2>,SDL2::SDL2,SDL2::SDL2-static>
+)
+target_link_libraries(ponscr PRIVATE $<IF:$<TARGET_EXISTS:SDL2_image::SDL2_image>,SDL2_image::SDL2_image,SDL2_image::SDL2_image-static>)
+target_link_libraries(ponscr PRIVATE $<IF:$<TARGET_EXISTS:SDL2_mixer::SDL2_mixer>,SDL2_mixer::SDL2_mixer,SDL2_mixer::SDL2_mixer-static>)
 
 if (USE_STEAM)
 	target_link_libraries(ponscr PRIVATE Steam::Steam)
@@ -141,6 +149,10 @@ elseif (UNIX AND NOT APPLE)
 			USE_OGG_VORBIS)
 endif ()
 
+if (ENABLE_INSPECTOR)
+	target_compile_definitions(ponscr PRIVATE ENABLE_INSPECTOR)
+endif ()
+
 if (USE_CPU_GFX)
 	if (CMAKE_SYSTEM_PROCESSOR STREQUAL x86_64 OR CMAKE_SYSTEM_PROCESSOR STREQUAL amd64 OR CMAKE_SYSTEM_PROCESSOR STREQUAL i686)
 		target_compile_definitions(ponscr PRIVATE USE_X86_GFX)
@@ -172,7 +184,7 @@ add_library(imgui
 	${imgui_external_SOURCE_DIR}/backends/imgui_impl_sdl2.cpp
 	${imgui_external_SOURCE_DIR}/backends/imgui_impl_sdlrenderer2.cpp
 )
-target_link_libraries(imgui PRIVATE SDL2::Main)
+target_link_libraries(imgui PRIVATE SDL2::SDL2)
 target_include_directories(imgui PUBLIC ${imgui_external_SOURCE_DIR})
 target_link_libraries(ponscr PUBLIC imgui)
 
@@ -184,3 +196,5 @@ FetchContent_Declare(LoguruGitRepo
 FetchContent_MakeAvailable(LoguruGitRepo)
 
 target_link_libraries(ponscr PUBLIC loguru::loguru)
+
+install(TARGETS ponscr RUNTIME DESTINATION bin)

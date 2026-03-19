@@ -1,0 +1,16 @@
+{
+  "dependencies": [
+    "pthreads",
+    "bzip2",
+    "freetype",
+    "libjpeg-turbo",
+    "libogg",
+    "libpng",
+    "libvorbis",
+    "sdl2",
+    "sdl2-image",
+    "sdl2-mixer",
+    "smpeg2",
+    "zlib"
+  ]
+}

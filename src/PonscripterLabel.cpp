@@ -902,7 +902,7 @@ pstring Local_GetSavePathParent() // POSIX-ish version
 }
 #endif //WIN32 / OSX / LINUX
 pstring Local_GetSavePath(const pstring& local_savedir) {
-    pstring rv = Local_GetSavePathParent() + (local_savedir ? local_savedir : "saves/");
+    pstring rv = Local_GetSavePathParent() + (local_savedir ? local_savedir : pstring("saves/"));
     if (makeFolder(&rv) != 0) {
         PonscripterMessage(Error, "Unable to create save directory", "Unable to create save directory at " + rv + ", will not be able to save");
     }
@@ -1148,6 +1148,7 @@ pstring getGameId(ScriptHandler& script_h)
 int PonscripterLabel::init(const char* preferred_script)
 {
 #ifdef STEAM
+    LOG_F(INFO, "Initializing Steam");
     initSteam();
 #endif
 
@@ -1156,6 +1157,7 @@ int PonscripterLabel::init(const char* preferred_script)
     // directory, the current directory, or somewhere unpredictable
     // that must be specified with the -r option; in all such cases we
     // assume the current directory if nothing else was specified.
+
     if (archive_path.get_num_paths()==0) {
 #ifdef MACOSX
         // Store archives etc in the application bundle by default, but
